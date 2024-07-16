@@ -1,0 +1,13 @@
+/data/DataCombination.ipynb
+/data/GetRawDataFrameCISS.ipynb
+/data/GetRawDataFrameNASS.ipynb
+/src/test.py
+
+/data/.ipynb_checkpoints/
+/data/CISS/
+/data/NASS/
+
+/data/Combined/x_test.csv
+/data/Combined/x_train.csv
+/data/Combined/y_test.csv
+/data/Combined/y_train.csv
