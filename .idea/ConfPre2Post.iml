@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/data/.ipynb_checkpoints" />
       <excludeFolder url="file://$MODULE_DIR$/data/CISS" />
       <excludeFolder url="file://$MODULE_DIR$/data/NASS" />
+      <excludeFolder url="file://$MODULE_DIR$/src/catboost_info" />
       <excludeFolder url="file://$MODULE_DIR$/src/catboost_info/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="nasscissML" jdkType="Python SDK" />

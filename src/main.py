@@ -35,6 +35,10 @@ def main_flow_compare(data_path, use_feats_list, n_tairls, use_metric, class_wei
                                                             use_metric, class_weights)
 
 
+def retrain_with_cp():
+    pass
+
+
 if __name__ == "__main__":
     data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'data', 'Combined', 'CombineNassCiss.csv')
@@ -48,4 +52,8 @@ if __name__ == "__main__":
 
     main_flow_compare(data_path, use_feats_list, n_trials, using_metric, given_class_weights)
 
+# TODO:
+#  1. choose of model;
+#  2. Single model retrain with/without CP.
 
+# TODO: Training without RIF is not stable, so also try with RIF.

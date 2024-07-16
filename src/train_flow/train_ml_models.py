@@ -36,4 +36,4 @@ def train_single_model_sampling(feats, labels,
 
     # Retrain for performance evaluation
     retrain_modules.retrain(model, best_params, x_train, y_train, x_test, y_test, sampling=sampling,
-                            rif_use=False, class_weights=class_weights, save_dir=result_dir)
+                            rif_use=True, class_weights=class_weights, save_dir=result_dir)
