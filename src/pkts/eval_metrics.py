@@ -14,7 +14,7 @@ def draw_confusion_matrix(y_test, y_pred, save_path, model_info):
     disp.plot()
 
     plt.savefig(os.path.join(save_path, f'confusion matrix of {model_info}.png'))
-    plt.show()
+    # plt.show()
 
 
 def draw_roc_curve(y_test, y_proba, save_path,model_info):
@@ -33,7 +33,7 @@ def draw_roc_curve(y_test, y_proba, save_path,model_info):
     plt.title(f"Receiver Operating Characteristic of {model_info}")
 
     plt.savefig(os.path.join(save_path, f'ROC of {model_info}.png'))
-    plt.show()
+    # plt.show()
 
 
 def multi_models_roc(models, preds, y_label, colors=['crimson', 'blue', 'green'], save=True, dpin=100):

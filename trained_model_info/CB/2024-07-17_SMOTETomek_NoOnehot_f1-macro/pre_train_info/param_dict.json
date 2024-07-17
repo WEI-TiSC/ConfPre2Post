@@ -1,0 +1,12 @@
+{
+    "iterations": 1200,
+    "learning_rate": 0.046,
+    "random_strength": 2,
+    "bagging_temperature": 5,
+    "max_bin": 5,
+    "grow_policy": "SymmetricTree",
+    "min_data_in_leaf": 2,
+    "depth": 7,
+    "l2_leaf_reg": 1.1348129755124294e-07,
+    "one_hot_max_size": 10
+}
