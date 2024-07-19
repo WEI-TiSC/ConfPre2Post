@@ -18,11 +18,19 @@ from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
 from src.pkts.my_logger import logger
 
 
-def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', rif_use=False,
+def prepare_rif_setting(x_train, y_train, x_test):
+    x_train_rif, y_train_rif = prepro_modules.run_rif(x_train, y_train)
+    x_test = x_test.drop(columns=['CASEWGT'])
+
+    return x_train_rif, y_train_rif, x_test
+
+
+def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', rifed='no_rif',
             class_weights=None, save_dir=None):
     """
     Retrain model.
 
+    :param rifed: whether rif, only used for saving path
     :param model: model used
     :param params: hyper-params from pre-train
     :param x_train: x_train for training
@@ -30,21 +38,11 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     :param x_test: x_test for evaluation
     :param y_test: y_test for evaluation
     :param sampling: sampling tech
-    :param rif_use: whether rif used
     :param class_weights: inherited class weights
     :param save_dir: path for saving result
     :return:
     """
     assert model in ['LGBM', 'CB', 'RF'], 'Unknown model!'
-
-    # rif
-    rif_str = 'no_rif'
-    if rif_use:
-        rif_str = 'with_rif'
-        x_train, y_train = prepro_modules.run_rif(x_train, y_train)
-    else:
-        x_train = x_train.drop(columns=['CASEWGT'])
-    x_test = x_test.drop(columns=['CASEWGT'])
 
     if sampling != 'None':  # Use given class weights
         x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
@@ -82,7 +80,7 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     print('\n' * 3, 'Confusion matrix:\n', conf_matrix)
 
     # Draw Heatmap
-    model_info = 'retrain_' + model + '_' + rif_str + '_MultiClassification'
+    model_info = 'retrain_' + model + '_' + rifed + '_MultiClassification'
     model_save_dir = os.path.join(save_dir, model_info)
     os.makedirs(model_save_dir, exist_ok=True)
 

@@ -42,7 +42,9 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
     slight_ratio = round(len(df_features[df_features['InjurySeverity'] == 1]) / len(df_features), 3)
     logger.info(f'Drop null的数据重伤比： {severe_ratio}, 轻伤比：{slight_ratio}, 全样本数：{len(df_features)}')
 
+    one_hot_str = 'no_one_hot'
     if one_hot:
+        one_hot_str = 'with_one_hot'
         for feat in cat_feats:
             if feat in df_features.columns:
                 df_features[feat] = df_features[feat].astype('category')
@@ -62,7 +64,9 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
 
     # Save train test dataset
     train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
-    train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'Combined')
+    train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                       'data', 'Combined', one_hot_str)
+    os.makedirs(train_test_save_dir, exist_ok=True)
     for df_name, df in train_test_data_dict.items():
         df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'))
 
@@ -72,4 +76,4 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
 if __name__ == "__main__":
     input_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                              'data', 'Combined', 'CombineNassCiss.csv')
-    get_processed_data(input_dir, use_features=ALL_PRE_FEATURES)
+    get_processed_data(input_dir, use_features=ALL_PRE_FEATURES, one_hot=True)

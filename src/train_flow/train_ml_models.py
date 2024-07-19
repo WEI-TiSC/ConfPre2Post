@@ -11,10 +11,11 @@ from src.pkts import retrain_modules
 def train_single_model_sampling(feats, labels,
                                 x_train, x_test, y_train, y_test,
                                 model, sampling, trials, one_hot=False,
-                                metric='f1-macro', class_weights=None):
+                                metric='f1-macro', class_weights=None, rif=False):
     """
     Pretrain single model based on specific sampling and one-hot choice.
 
+    :param rif: Whether rif
     :param feats: for pretrain, x
     :param labels: for pretrain, y
     :param x_train: for retrain, x
@@ -35,5 +36,11 @@ def train_single_model_sampling(feats, labels,
                                                         n_trials=trials, one_hot=one_hot)
 
     # Retrain for performance evaluation
-    retrain_modules.retrain(model, best_params, x_train, y_train, x_test, y_test, sampling=sampling,
-                            rif_use=False, class_weights=class_weights, save_dir=result_dir)
+    rif_str = 'with_rif' if rif else 'no_rif'
+    un_samp = 'None'
+    if rif:
+        un_samp = 'TomekLinks'  # if no under sampling, the use None
+        x_train, y_train, x_test = retrain_modules.prepare_rif_setting(x_train, y_train, x_test)
+    use_sampling = un_samp if un_samp != 'None' else sampling
+    retrain_modules.retrain(model, best_params, x_train, y_train, x_test, y_test, sampling=use_sampling,
+                            class_weights=class_weights, save_dir=result_dir, rifed=rif_str)
