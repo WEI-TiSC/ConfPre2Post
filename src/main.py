@@ -46,9 +46,9 @@ if __name__ == "__main__":
     use_feats_list = ALL_PRE_FEATURES
 
     # for pre-train
-    n_trials = 3
+    n_trials = 300
     using_metric = 'f1-macro'
-    given_class_weights = {0: 1, 1: 1, 2: 8}  # Only used if resampling.
+    given_class_weights = {0: 1, 1: 1, 2: 5}  # Only used if resampling.
 
     main_flow_compare(data_path, use_feats_list, n_trials, using_metric, given_class_weights)
 
