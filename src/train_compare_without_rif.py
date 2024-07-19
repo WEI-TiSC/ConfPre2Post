@@ -35,10 +35,6 @@ def main_flow_compare(data_path, use_feats_list, n_tairls, use_metric, class_wei
                                                             use_metric, class_weights, rif)
 
 
-def retrain_with_cp():
-    pass
-
-
 if __name__ == "__main__":
     data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'data', 'Combined', 'CombineNassCiss.csv')

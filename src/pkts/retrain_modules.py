@@ -18,11 +18,10 @@ from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
 from src.pkts.my_logger import logger
 
 
-def prepare_rif_setting(x_train, y_train, x_test):
+def prepare_rif_setting(x_train, y_train):
     x_train_rif, y_train_rif = prepro_modules.run_rif(x_train, y_train)
-    x_test = x_test.drop(columns=['CASEWGT'])
 
-    return x_train_rif, y_train_rif, x_test
+    return x_train_rif, y_train_rif
 
 
 def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', rifed='no_rif',
@@ -85,7 +84,7 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     os.makedirs(model_save_dir, exist_ok=True)
 
     eval_metrics.draw_confusion_matrix(y_test, y_pred, model_save_dir, model_info)
-    eval_metrics.draw_roc_curve(y_test, y_proba, model_save_dir, model_info)
+    # eval_metrics.draw_roc_curve(y_test, y_proba, model_save_dir, model_info)
 
     classification_report = metrics.classification_report(y_test, y_pred, digits=4, output_dict=True)
     classification_report = pd.DataFrame(classification_report).transpose()

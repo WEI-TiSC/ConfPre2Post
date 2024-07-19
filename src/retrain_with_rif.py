@@ -19,20 +19,55 @@ if __name__ == "__main__":
     no_onehot_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                      'data', 'Combined', 'no_one_hot')
 
-    x_noh_train = pd.read_csv(os.path.join(no_onehot_path, 'x_train.csv'))
-    y_noh_train = pd.read_csv(os.path.join(no_onehot_path, 'y_train.csv'))
+    # ----------------------------------------------------------------------
+    # Check if rif-ed file exists
+    x_noh_train_rif_path = os.path.join(no_onehot_path, 'x_train_rif.csv')
+    y_noh_train_fif_path = os.path.join(no_onehot_path, 'y_train_rif.csv')
+
+    if not os.path.exists(x_noh_train_rif_path):
+        x_noh_train = pd.read_csv(os.path.join(no_onehot_path, 'x_train.csv'))
+        y_noh_train = pd.read_csv(os.path.join(no_onehot_path, 'y_train.csv'))
+
+        x_noh_train, y_noh_train = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train)
+        x_noh_train.to_csv(os.path.join(no_onehot_path, 'x_train_rif.csv'), index=False)
+        y_noh_train.to_csv(os.path.join(no_onehot_path, 'y_train_rif.csv'), index=False)
+    else:
+        x_noh_train = pd.read_csv(x_noh_train_rif_path)
+        y_noh_train = pd.read_csv(y_noh_train_fif_path)
+        y_noh_train = pd.Series(y_noh_train['InjurySeverity'].values)
+
     x_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'x_test.csv'))
     y_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'y_test.csv'))
+    y_noh_test = pd.Series(y_noh_test['InjurySeverity'].values)
 
-    # x_noh_train, y_noh_train, x_noh_test = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train, x_noh_test)
+    if 'CASEWGT' in x_noh_test.columns.values:
+        x_noh_test = x_noh_test.drop(columns=['CASEWGT'])
 
-    x_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'x_train.csv'))
-    y_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'y_train.csv'))
+    # ----------------------------------------------------------------------
+    # Check if rif-ed file exists
+    x_oh_train_rif_path = os.path.join(one_hot_data_path, 'x_train_rif.csv')
+    y_oh_train_fif_path = os.path.join(one_hot_data_path, 'y_train_rif.csv')
+
+    if not os.path.exists(x_oh_train_rif_path):
+        x_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'x_train.csv'))
+        y_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'y_train.csv'))
+
+        x_oh_train, y_oh_train = retrain_modules.prepare_rif_setting(x_oh_train, y_oh_train)
+        x_oh_train.to_csv(os.path.join(one_hot_data_path, 'x_train_rif.csv'), index=False)
+        y_oh_train.to_csv(os.path.join(one_hot_data_path, 'y_train_rif.csv'), index=False)
+    else:
+        x_oh_train = pd.read_csv(x_oh_train_rif_path)
+        y_oh_train = pd.read_csv(y_oh_train_fif_path)
+        y_oh_train = pd.Series(y_oh_train['InjurySeverity'].values)
+
     x_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'x_test.csv'))
     y_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'y_test.csv'))
+    y_oh_test = pd.Series(y_oh_test['InjurySeverity'].values)
 
-    # x_oh_train, y_oh_train, x_oh_test = retrain_modules.prepare_rif_setting(x_oh_train, y_oh_train, x_oh_test)
-
+    if 'CASEWGT' in x_oh_test.columns.values:
+        x_noh_test = x_oh_test.drop(columns=['CASEWGT'])
+    # ----------------------------------------------------------------------
+    # Set up retrain flow
     models_name = [each for each in os.listdir(models_path)]
     sampling_range = ['None', 'TomekLinks']
 
@@ -48,10 +83,10 @@ if __name__ == "__main__":
             if 'NoOnehot' in ml_setting:
                 for sampling in sampling_range:
                     retrain_modules.retrain(model, param_dict, x_noh_train, y_noh_train, x_noh_test, y_noh_test,
-                                            sampling=sampling, rifed='with_rif', class_weights={1, 1, 6},
+                                            sampling=sampling, rifed='with_rif', class_weights={0: 1, 1: 1, 2: 6},
                                             save_dir=os.path.join(cur_save_dir, ml_setting))
             else:
                 for sampling in sampling_range:
                     retrain_modules.retrain(model, param_dict, x_oh_train, y_oh_train, x_oh_test, y_oh_test,
-                                            sampling=sampling, rifed='with_rif', class_weights={1, 1, 6},
+                                            sampling=sampling, rifed='with_rif', class_weights={0: 1, 1: 1, 2: 6},
                                             save_dir=os.path.join(cur_save_dir, ml_setting))
