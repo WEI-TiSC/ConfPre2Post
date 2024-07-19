@@ -24,14 +24,14 @@ if __name__ == "__main__":
     x_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'x_test.csv'))
     y_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'y_test.csv'))
 
-    x_noh_train, y_noh_train, x_noh_test = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train, x_noh_test)
+    # x_noh_train, y_noh_train, x_noh_test = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train, x_noh_test)
 
     x_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'x_train.csv'))
     y_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'y_train.csv'))
     x_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'x_test.csv'))
     y_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'y_test.csv'))
 
-    x_oh_train, y_oh_train, x_oh_test = retrain_modules.prepare_rif_setting(x_oh_train, y_oh_train, x_oh_test)
+    # x_oh_train, y_oh_train, x_oh_test = retrain_modules.prepare_rif_setting(x_oh_train, y_oh_train, x_oh_test)
 
     models_name = [each for each in os.listdir(models_path)]
     sampling_range = ['None', 'TomekLinks']

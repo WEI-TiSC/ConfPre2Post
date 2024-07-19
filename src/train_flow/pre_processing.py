@@ -68,7 +68,7 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
                                        'data', 'Combined', one_hot_str)
     os.makedirs(train_test_save_dir, exist_ok=True)
     for df_name, df in train_test_data_dict.items():
-        df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'))
+        df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'), index=False)
 
     return feats, labels, x_train, x_test, y_train, y_test
 
@@ -76,4 +76,4 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
 if __name__ == "__main__":
     input_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                              'data', 'Combined', 'CombineNassCiss.csv')
-    get_processed_data(input_dir, use_features=ALL_PRE_FEATURES, one_hot=True)
+    get_processed_data(input_dir, use_features=ALL_PRE_FEATURES, one_hot=False)
