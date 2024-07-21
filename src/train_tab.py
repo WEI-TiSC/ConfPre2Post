@@ -75,9 +75,9 @@ def objective_tab(feats, labels, trial, sampling='None', class_weights={0: 1, 1:
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        eval_set=[(x_train.values, y_train), (x_cv.values, y_cv)],
-        eval_name=['train', 'validation'],
-        eval_metric=[f1_macro_for_eval],
+        # eval_set=[(x_train.values, y_train), (x_cv.values, y_cv)],
+        # eval_name=['train', 'validation'],
+        # eval_metric=[f1_macro_for_eval],
         max_epochs=300,
         batch_size=256,
         patience=60,
@@ -163,9 +163,9 @@ def fine_tune(x_train,
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
-        eval_name=['train', 'test'],
-        eval_metric=[f1_macro_for_eval],
+        # eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
+        # eval_name=['train', 'test'],
+        # eval_metric=[f1_macro_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
         max_epochs=3000,
         batch_size=512,
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     USE_FEATS = prepro_modules.ALL_PRE_FEATURES
     WHETHER_RIF = 'no_rif'
     SAMPLING = 'None'
-    N_TRIALS = 200
+    N_TRIALS = 100
 
     feats, labels, x_train, x_test, y_train, y_test = (
         pre_processing.get_processed_data(DATA_PATH, use_features=USE_FEATS))
@@ -235,4 +235,4 @@ if __name__ == "__main__":
 
     wrap_up_learning(feats, labels, x_train, x_test, y_train, y_test, N_TRIALS, SAMPLING, rif=WHETHER_RIF)
 
-# TODO: Try f score beta (see firefox)
+# TODO: TAB:Try balanced_accuracy! All: try ROS and rif+RUS!
