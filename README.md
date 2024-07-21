@@ -24,3 +24,13 @@ compare the performance with other related research;
    3. Analyze hard examples in CP using medical history and other factors to
 draw an analytical result.
 ```
+
+## Point
+
+1. Retrain with rif-data without rus performs worst for only 1% severe data exist.
+2. ROS must be tried for both pre-train and retrain.
+3. CCCP: different threshold! {0.8, 0.8, 0.9} might be good.
+
+
+- **Important**: Only divide into with/without one-hot in hyper-params tuning, 
+and retrain all data-sets using tha params!

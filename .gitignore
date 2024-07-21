@@ -1,14 +1,11 @@
-/data/DataCombination.ipynb
-/data/GetRawDataFrameCISS.ipynb
-/data/GetRawDataFrameNASS.ipynb
 /src/test.py
 
 /data/.ipynb_checkpoints/
 /data/CISS/
 /data/NASS/
 
-/data/Combined/x_test.csv
-/data/Combined/x_train.csv
-/data/Combined/y_test.csv
-/data/Combined/y_train.csv
 /src/catboost_info/
+/data/Combined/no_one_hot/x_train_rif.csv
+/data/Combined/no_one_hot/y_train_rif.csv
+/data/Combined/no_one_hot/x_train_rif_rus.csv
+/data/Combined/no_one_hot/y_train_rif_rus.csv

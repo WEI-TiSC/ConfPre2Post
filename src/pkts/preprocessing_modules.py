@@ -6,8 +6,8 @@
 # feature selection, etc.
 import numpy as np
 import pandas as pd
-from imblearn.under_sampling import TomekLinks
-from imblearn.over_sampling import ADASYN, BorderlineSMOTE
+from imblearn.under_sampling import TomekLinks, RandomUnderSampler
+from imblearn.over_sampling import ADASYN, BorderlineSMOTE, RandomOverSampler
 from imblearn.combine import SMOTETomek
 
 from src.pkts.my_logger import logger
@@ -17,9 +17,11 @@ SAMPLING_POOL = {
     'ADASYN': ADASYN(random_state=42, n_neighbors=10, sampling_strategy='not majority'),
     'BSMOTE': BorderlineSMOTE(random_state=42, sampling_strategy=1),
     'SMOTETomek': SMOTETomek(random_state=42, sampling_strategy='not majority'),
+    'ROS': RandomOverSampler(random_state=42, sampling_strategy='all'),  # All sample get same counts
 
     # Under Sampling
-    'TomekLinks': TomekLinks(sampling_strategy='majority')
+    'TomekLinks': TomekLinks(sampling_strategy='majority'),
+    'RUS': RandomUnderSampler(random_state=42, sampling_strategy='all'),
 }
 
 FACTOR_DICT = {

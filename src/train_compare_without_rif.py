@@ -47,10 +47,3 @@ if __name__ == "__main__":
     given_class_weights = {0: 1, 1: 1, 2: 5}  # Only used if resampling.
 
     main_flow_compare(data_path, use_feats_list, n_trials, using_metric, given_class_weights)
-
-# TODO:
-#  1. Choose of model;
-#  2. Single model retrain with/without CP.
-#  3. Try different given class weight of resampling for medical results occurred as (0 0 all)!
-
-

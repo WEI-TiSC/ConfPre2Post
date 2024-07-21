@@ -39,7 +39,7 @@ def train_single_model_sampling(feats, labels,
     rif_str = 'with_rif' if rif else 'no_rif'
     un_samp = 'None'
     if rif:
-        un_samp = 'TomekLinks'  # if no under sampling, the use None
+        un_samp = 'TomekLinks'  # add: Never use None, use rus and tl! (data prepared)
         x_train, y_train, x_test = retrain_modules.prepare_rif_setting(x_train, y_train, x_test)
     use_sampling = un_samp if un_samp != 'None' else sampling
     retrain_modules.retrain(model, best_params, x_train, y_train, x_test, y_test, sampling=use_sampling,
