@@ -5,7 +5,4 @@
 /data/NASS/
 
 /src/catboost_info/
-/data/Combined/no_one_hot/x_train_rif.csv
-/data/Combined/no_one_hot/y_train_rif.csv
-/data/Combined/no_one_hot/x_train_rif_rus.csv
-/data/Combined/no_one_hot/y_train_rif_rus.csv
+
