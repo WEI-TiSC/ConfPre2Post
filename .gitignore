@@ -12,3 +12,4 @@
 /data/Combined/y_test.csv
 /data/Combined/y_train.csv
 /src/catboost_info/
+*.csv
