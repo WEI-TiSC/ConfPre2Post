@@ -11,7 +11,7 @@ from src.pkts import retrain_modules
 def train_single_model_sampling(feats, labels,
                                 x_train, x_test, y_train, y_test,
                                 model, trials, one_hot=False,
-                                metric='f1-macro', class_weights=None, rif=False):
+                                metric='f1-macro', class_weights=None):
     """
     Pretrain single model based on specific sampling and one-hot choice.
 
@@ -43,3 +43,5 @@ def train_single_model_sampling(feats, labels,
     # use_sampling = un_samp if un_samp != 'None' else sampling
     # retrain_modules.retrain(model, best_params, x_train, y_train, x_test, y_test, sampling=use_sampling,
     #                         class_weights=class_weights, save_dir=result_dir, rifed=rif_str)
+
+# TODO: Modify retrain to learn all sampling.

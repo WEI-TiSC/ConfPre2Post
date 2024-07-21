@@ -34,5 +34,5 @@ draw an analytical result.
 
 - **Important**: Only divide into with/without one-hot in hyper-params tuning, 
 and retrain all data-sets using tha params!
-  - Pretrain: RIF_RUS data (with/without onehot);
+  - Pretrain: ROS data (with/without onehot);
   - Retrain: All sampling sets.
