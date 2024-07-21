@@ -19,7 +19,7 @@ def draw_confusion_matrix(y_test, y_pred, save_path, model_info):
 
 def draw_roc_curve(y_test, y_proba, save_path,model_info):
     """
-    仅对二分类问题适用
+
     """
     fpr, tpr, threshold = metrics.roc_curve(y_test, y_proba[:, 1], pos_label=1)
     roc_auc = metrics.auc(fpr, tpr)

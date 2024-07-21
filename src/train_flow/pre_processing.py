@@ -56,7 +56,7 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
         feats, labels = df_features.drop(columns=['InjurySeverity']), df_features['InjurySeverity']
 
     x_train, x_test, y_train, y_test = train_test_split(feats, labels, stratify=labels,
-                                                        shuffle=True, test_size=0.15,
+                                                        shuffle=True, test_size=0.20,
                                                         random_state=42)  # uniform for severe.
 
     assert round(len(y_train[y_train == 2]) / len(y_train), 3) == round(len(y_test[y_test == 2]) / len(y_test), 3), \

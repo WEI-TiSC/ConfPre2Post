@@ -11,12 +11,12 @@ from src.pkts.preprocessing_modules import ALL_PRE_FEATURES
 
 def main_flow_compare(data_path, use_feats_list, n_tairls, use_metric, class_weights, rif=False):
     # for compare
-    using_models = ['LGBM', 'RF', 'CB']
-    using_resampling = ['ADASYN', 'SMOTETomek', 'None']
-    using_onehot = [1, 0]
-    # using_models = ['LGBM']
-    # using_resampling = ['None']
-    # using_onehot = [1]
+    # using_models = ['LGBM', 'RF', 'CB']
+    # using_resampling = ['ADASYN', 'SMOTETomek', 'None']
+    # using_onehot = [1, 0]
+    using_models = ['LGBM']
+    using_resampling = ['None']
+    using_onehot = [0]
 
     feats, labels, x_train, x_test, y_train, y_test = (
         pre_processing.get_processed_data(data_path, use_features=use_feats_list))
@@ -46,9 +46,9 @@ if __name__ == "__main__":
     use_feats_list = ALL_PRE_FEATURES
 
     # for pre-train
-    n_trials = 300
+    n_trials = 3
     using_metric = 'f1-macro'
-    given_class_weights = {0: 1, 1: 1, 2: 5}  # Only used if resampling.
+    given_class_weights = {0: 1, 1: 1, 2: 6}  # Only used if resampling.
 
     main_flow_compare(data_path, use_feats_list, n_trials, using_metric, given_class_weights)
 

@@ -1,0 +1,35 @@
+import os
+import time
+import numpy as np
+import pandas as pd
+from src.pkts import pretrain_modules as prepro_modules
+
+one_hot_data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                 'data', 'Combined', 'with_one_hot')
+x_oh_train_rif_path = os.path.join(one_hot_data_path, 'x_train_rif.csv')
+y_oh_train_fif_path = os.path.join(one_hot_data_path, 'y_train_rif.csv')
+x_oh_train = pd.read_csv(x_oh_train_rif_path)
+y_oh_train = pd.read_csv(y_oh_train_fif_path)
+y_oh_train = pd.Series(y_oh_train['InjurySeverity'].values)
+
+no_onehot_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              'data', 'Combined', 'no_one_hot')
+x_noh_train_rif_path = os.path.join(no_onehot_path, 'x_train_rif.csv')
+y_noh_train_fif_path = os.path.join(no_onehot_path, 'y_train_rif.csv')
+x_noh_train = pd.read_csv(x_noh_train_rif_path)
+y_noh_train = pd.read_csv(y_noh_train_fif_path)
+y_noh_train = pd.Series(y_noh_train['InjurySeverity'].values)
+
+st = time.time()
+x_oh_rif_tl, y_oh_rif_tl = prepro_modules.data_resampling(x_oh_train, y_oh_train, sampling_method='TomekLinks')
+x_oh_rif_tl.to_csv(os.path.join(one_hot_data_path, 'x_train_rif_tl.csv'), index=False)
+y_oh_rif_tl.to_csv(os.path.join(one_hot_data_path, 'y_train_rif_tl.csv'), index=False)
+print(time.time() - st)
+
+st2 = time.time()
+x_noh_rif_tl, y_noh_rif_tl = prepro_modules.data_resampling(x_noh_train, y_noh_train, sampling_method='TomekLinks')
+x_noh_rif_tl.to_csv(os.path.join(no_onehot_path, 'x_train_rif_tl.csv'), index=False)
+y_noh_rif_tl.to_csv(os.path.join(no_onehot_path, 'y_train_rif_tl.csv'), index=False)
+print(time.time() - st2)
+
+# TODO: TomekLinks cost over 7 days for each! CRAZY! PASS IT!
