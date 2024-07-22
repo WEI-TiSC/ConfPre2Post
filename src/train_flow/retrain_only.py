@@ -11,12 +11,12 @@ import pandas as pd
 from src.pkts import retrain_modules
 
 if __name__ == "__main__":
-    models_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+    models_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                'trained_model_info')
 
-    one_hot_data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+    one_hot_data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                      'data', 'Combined', 'with_one_hot')
-    no_onehot_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+    no_onehot_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                   'data', 'Combined', 'no_one_hot')
 
     # ----------------------------------------------------------------------

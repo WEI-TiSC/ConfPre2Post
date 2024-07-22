@@ -37,7 +37,7 @@ def calc_average_set_size(conf_set):
     return avg_size
 
 
-def calc_ssc_metric(conf_set, y_true, alpha):
+def calc_ssc_metric(conf_set, y_true):
     """
     ssc = total_involved_samples_num / total_prediction_set_size
 

@@ -216,7 +216,7 @@ def wrap_up_learning(data_path, n_trials, sampling='ROS', retrain_only=False):
     x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
     y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
 
-    feats = pd.concat([x_train, x_test], axis=1)
+    feats = pd.concat([x_train, x_test], axis=1)  # TODO: Check concat! Why cp use reset_index and not here?
     labels = pd.concat([y_train, y_test], axis=1)
 
     if not retrain_only:
@@ -237,10 +237,10 @@ def wrap_up_learning(data_path, n_trials, sampling='ROS', retrain_only=False):
 
 
 if __name__ == "__main__":
-    DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+    DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                              'data', 'Combined', 'no_one_hot')  # Deep learning do not need one_hot
     N_TRIALS = 100
 
     wrap_up_learning(DATA_PATH, N_TRIALS, sampling='ROS', retrain_only=False)
 
-# TODO: TAB:Try balanced_accuracy! Modify wrap_up_training!
+# TODO: TAB:Try balanced_accuracy! Modify best params and save path of wrap_up_training!

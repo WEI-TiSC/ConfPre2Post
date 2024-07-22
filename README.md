@@ -41,3 +41,6 @@ and retrain all data-sets using tha params!
   - Class_weight cannot change the situation of lack on severe data
   - SMOTE-based techs interpolates between minority class samples to generate new synthetic samples,
 however, quality of generated data seems to be not that good for non-severe and severe data are like each other. 
+
+
+## pretrain ML -> pretrain TabNet -> retrain them -> Compare performance and choose best 3? -> CP and eval by SSC!
