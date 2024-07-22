@@ -26,9 +26,9 @@ from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
 from src.train_flow import pre_processing
 
 
-def objective_tab(feats, labels, trial, sampling='None', class_weights={0: 1, 1: 1, 2: 6}):
+def objective_tab(feats, labels, trial, sampling='ROS', class_weights=None):
     if class_weights is None:
-        class_weights = {0: 1, 1: 1, 2: 6}
+        class_weights = {0: 1, 1: 1, 2: 1}
     feats = feats.drop(columns=['CASEWGT'])
     x_train, x_cv, y_train, y_cv = train_test_split(feats, labels, stratify=labels,
                                                     shuffle=True, test_size=0.2, random_state=42)
@@ -64,8 +64,8 @@ def objective_tab(feats, labels, trial, sampling='None', class_weights={0: 1, 1:
     mode = 'max'  # f1-macro
     scheduler_params = {
         "mode": mode,  # max because of eval metric
-        "factor": 0.1, # Initial learning rate 0.01, lr decay = 0.1
-        "patience": 10 # 10 epochs patience, when loss not get smaller over 10 epochs, lr_new = lr * factor
+        "factor": 0.5,  # Initial learning rate 0.01, lr decay = 0.5
+        "patience": 10  # 10 epochs patience, when loss not get smaller over 10 epochs, lr_new = lr * factor
     }
 
     tab_clf = TabNetClassifier(scheduler_fn=scheduler_fn, scheduler_params=scheduler_params,
@@ -90,7 +90,7 @@ def objective_tab(feats, labels, trial, sampling='None', class_weights={0: 1, 1:
     return cv_score
 
 
-def hyperparam_tuning(feats, labels, sampling='None', n_trials=300):
+def hyperparam_tuning(feats, labels, sampling='ROS', n_trials=300):
     pruner = optuna.pruners.MedianPruner()
     study_info = 'TabNet_' + sampling
     study_direction = 'maximize'  # based on: metric == 'macro'
@@ -128,7 +128,7 @@ def fine_tune(x_train,
               sampling='None',
               rif='no_rif',  # Only for saving path, pre-processing needs to be done before training
               save_dir=None,
-              weights={0: 1, 1: 1, 2: 8}):
+              weights=None):
     """
     CASEWGT needs to be removed if no RIF!
 
@@ -143,6 +143,8 @@ def fine_tune(x_train,
     :param save_dir:
     :return:
     """
+    if weights is None:
+        weights = {0: 1, 1: 1, 2: 1}
     if sampling != 'None':
         x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
     else:
@@ -152,7 +154,7 @@ def fine_tune(x_train,
     scheduler_fn = torch.optim.lr_scheduler.ReduceLROnPlateau
     scheduler_params = {
         "mode": 'min',
-        "factor": 0.1,
+        "factor": 0.5,
         "patience": 1
     }
 
@@ -167,7 +169,7 @@ def fine_tune(x_train,
         # eval_name=['train', 'test'],
         # eval_metric=[f1_macro_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
-        max_epochs=3000,
+        max_epochs=2000,
         batch_size=512,
         patience=100,
         drop_last=False
@@ -189,50 +191,56 @@ def fine_tune(x_train,
     classification_report = pd.DataFrame(classification_report).transpose()
     classification_report.to_csv(os.path.join(save_path, "classification_result.csv"), index=True)
 
+    # Save class weights
+    with open(os.path.join(save_path, 'class_weights.json'), 'w') as cls_json:
+        json.dump(weights, cls_json)
     # Save model as .pkl
     joblib.dump(tab_clf, os.path.join(save_path, f'{model_info}.pkl'))
 
 
-def wrap_up_learning(feats, labels, x_train, x_test, y_train, y_test, n_trials, sampling='None', rif='no_rif'):
+def wrap_up_learning(data_path, n_trials, sampling='ROS', retrain_only=False):
     '''
     If rif is wanted, please pre-process before this func!
 
-    :param feats:
-    :param labels:
-    :param x_train:
-    :param x_test:
-    :param y_train:
-    :param y_test:
-    :param n_trials:
-    :param sampling:
-    :param rif:
+    :param data_path: data path for all pre-processed ones
+    :param retrain_only: Use pre-trained params!
+    :param n_trials: running trials for hyper-params tuning
+    :param sampling: sampling used in pre-train (ROS)
     :return:
     '''
-    best_params, _, save_dir = hyperparam_tuning(feats, labels, sampling, n_trials)
+    x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
+    y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
+    x_train_rif_rus = pd.read_csv(os.path.join(data_path, 'x_train_rif_rus.csv'))
+    y_train_rif_rus = pd.read_csv(os.path.join(data_path, 'y_train_rif_rus.csv'))
 
-    fine_tune(x_train, x_test, y_train, y_test, best_params, sampling, rif, save_dir)
+    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
+    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
+
+    feats = pd.concat([x_train, x_test], axis=1)
+    labels = pd.concat([y_train, y_test], axis=1)
+
+    if not retrain_only:
+        best_params, _, save_dir = hyperparam_tuning(feats, labels, sampling, n_trials)
+    else:
+        pass  # TODO: find best_params path as file save dir.
+
+    rif_setting = [True, False]
+    resampling_setting = ['None', 'ROS', 'ADASYN', 'SMOTETomek']
+    for whether_rif in rif_setting:
+        if whether_rif:
+            fine_tune(x_train_rif_rus, x_test, y_train_rif_rus, y_test, best_params,
+                      rif='rif_rus', sampling='None', save_dir=save_dir)
+        else:
+            for rsp in resampling_setting:
+                fine_tune(x_train, x_test, y_train, y_test, best_params,
+                          rif='no_rif', sampling=rsp, save_dir=save_dir)
 
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'data', 'Combined', 'CombineNassCiss.csv')
-    USE_FEATS = prepro_modules.ALL_PRE_FEATURES
-    WHETHER_RIF = 'no_rif'
-    SAMPLING = 'None'
+                             'data', 'Combined', 'no_one_hot')  # Deep learning do not need one_hot
     N_TRIALS = 100
 
-    feats, labels, x_train, x_test, y_train, y_test = (
-        pre_processing.get_processed_data(DATA_PATH, use_features=USE_FEATS))
+    wrap_up_learning(DATA_PATH, N_TRIALS, sampling='ROS', retrain_only=False)
 
-    # Input rif-ed data here if rif is wanted
-    if WHETHER_RIF != 'no_rif':
-        rif_data_path = 'Here to fill your path'
-        x_train = pd.read_csv(os.path.join(rif_data_path, 'x_train_rif.csv'))
-        y_train = pd.read_csv(os.path.join(rif_data_path, 'y_train_rif.csv'))
-    else:
-        x_train = x_train.drop(columns=['CASEWGT'])
-    x_test = x_test.drop(columns=['CASEWGT'])
-
-    wrap_up_learning(feats, labels, x_train, x_test, y_train, y_test, N_TRIALS, SAMPLING, rif=WHETHER_RIF)
-
-# TODO: TAB:Try balanced_accuracy! All: try ROS and rif+RUS!
+# TODO: TAB:Try balanced_accuracy! Modify wrap_up_training!

@@ -3,6 +3,7 @@
 # @file : retrain_modules.py
 # @Time : 2024/7/16 1:27
 # Interpretation
+import json
 import os
 
 import joblib
@@ -89,6 +90,10 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     classification_report = metrics.classification_report(y_test, y_pred, digits=4, output_dict=True)
     classification_report = pd.DataFrame(classification_report).transpose()
     classification_report.to_csv(os.path.join(model_save_dir, "classification_result.csv"), index=True)
+
+    # Save class weights
+    with open(os.path.join(model_save_dir, 'class_weights.json'), 'w') as cls_json:
+        json.dump(class_weights, cls_json)
 
     # Save model as .pkl
     joblib.dump(retrain_model, os.path.join(model_save_dir, f'{model_info}.pkl'))

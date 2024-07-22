@@ -214,27 +214,22 @@ def pre_train_CB(x_train, x_cv, y_train, y_cv, param_grids, cv_scores, idx, metr
 
 def objective(feats, labels, param_grid, trial, metric='f1-macro', use_model='LGBM', k_fold=6):
     """
-    Pre-train. 使用 StratifiedKFold 分层采样确保各个集合中各类别样本比例与原始数据集相同。
-    由于后续会进行retrain，到时再分割训练测试即可，所以当前直接全部数据一起丢进来训练就好！
+    Pre-train.
 
-    进入当前轮交叉验证 -> 分割CV -> 训练集重采样(包括RIF) -> 循环调参
-    * RIF不需要k折cv故另起函数
+    :param metric: default f1-macro
+    :param trial: trials for hyper-params tuning
+    :param labels: Total labels
+    :param feats: Total features
+    :param param_grid: param pool
+    :param use_model: model used
+    :param k_fold: folds for cross-validation
 
-    :param given_class_weights: 预先指定的class weight
-    :param metric: 指标
-    :param trial: 轮数
-    :param labels: 非测试集的label
-    :param feats: 非测试机的feature
-    :param param_grid: 参数池
-    :param use_model: 使用的模型
-    :param k_fold: 交叉验证的折数
-
-    :return:
+    :return: evaluation f1-macro (metric could be modified)
     """
     stratified_k_fold = StratifiedKFold(n_splits=k_fold, shuffle=True, random_state=42)
     cv_scores = np.empty(k_fold)
 
-    # 无RIF故CASEWGT直接删去
+    # No rif in pre-train so drop it
     feats = feats.drop(columns=['CASEWGT'])
 
     for idx, (train_idx, cv_idx) in enumerate(stratified_k_fold.split(feats, labels)):
@@ -260,13 +255,11 @@ def objective(feats, labels, param_grid, trial, metric='f1-macro', use_model='LG
     return np.mean(cv_scores)
 
 
-def param_search_by_optuna(feats, labels, study_name='LGBM', metric='f1-macro', class_weights=None,
-                           n_trials=300, one_hot=False):
+def param_search_by_optuna(feats, labels, study_name='LGBM', metric='f1-macro', n_trials=300, one_hot=False):
     """
-    pre-train, 调用函数寻找最佳参数！
+    Optuna flow for pre-train
 
 
-    :param class_weights: inherited class weight
     :param metric: Evaluation metric
     :param n_trials: running trials
     :param study_name: model name
@@ -284,8 +277,7 @@ def param_search_by_optuna(feats, labels, study_name='LGBM', metric='f1-macro', 
 
     func = lambda trial: objective(feats=feats, labels=labels, param_grid=param_grid_dict(trial, study_name),
                                    trial=trial,
-                                   metric=metric, use_model=study_name,
-                                   given_class_weights=class_weights)
+                                   metric=metric, use_model=study_name)
     study.optimize(func, n_trials=n_trials)
 
     logger.debug(f'{study_info}_{metric} get the Best {metric}: {study.best_value:.3f}')

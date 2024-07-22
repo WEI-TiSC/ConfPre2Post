@@ -1,0 +1,8 @@
+{
+    "n_estimators": 150,
+    "max_depth": 23,
+    "min_samples_split": 10,
+    "min_samples_leaf": 10,
+    "max_features": "sqrt",
+    "criterion": "log_loss"
+}
