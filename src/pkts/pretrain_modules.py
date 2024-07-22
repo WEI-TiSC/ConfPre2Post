@@ -235,6 +235,7 @@ def objective(feats, labels, param_grid, trial, metric='f1-macro', use_model='LG
     for idx, (train_idx, cv_idx) in enumerate(stratified_k_fold.split(feats, labels)):
         x_train, x_cv = feats.iloc[train_idx], feats.iloc[cv_idx]
         y_train, y_cv = labels.iloc[train_idx], labels.iloc[cv_idx]
+        x_train, y_train = data_resampling(x_train, y_train, sampling_method='ROS')
 
         if idx == 0:
             logger.warning(f'Data length: {len(x_train)} for training, '
