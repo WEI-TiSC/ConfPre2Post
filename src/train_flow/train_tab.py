@@ -28,7 +28,7 @@ from src.train_flow import pre_processing
 
 def objective_tab(feats, labels, trial, sampling='ROS', class_weights=None):
     if class_weights is None:
-        class_weights = {0: 1, 1: 1, 2: 1}
+        class_weights = [1, 1, 1]
     feats = feats.drop(columns=['CASEWGT'])
     x_train, x_cv, y_train, y_cv = train_test_split(feats, labels, stratify=labels,
                                                     shuffle=True, test_size=0.2, random_state=42)
@@ -75,12 +75,12 @@ def objective_tab(feats, labels, trial, sampling='ROS', class_weights=None):
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        # eval_set=[(x_train.values, y_train), (x_cv.values, y_cv)],
-        # eval_name=['train', 'validation'],
-        # eval_metric=[f1_macro_for_eval],
-        max_epochs=300,
+        eval_set=[(x_train.values, y_train), (x_cv.values, y_cv)],
+        eval_name=['train', 'validation'],
+        eval_metric=[f1_macro_for_eval],
+        max_epochs=500,
         batch_size=256,
-        patience=60,
+        patience=100,
         drop_last=False
     )
 
@@ -100,7 +100,8 @@ def hyperparam_tuning(feats, labels, sampling='ROS', n_trials=300):
 
     logger.debug(f'{study_info} get the Best f1_macro: {study.best_value:.3f}')
 
-    save_result_pth = os.path.join(os.path.dirname(os.path.dirname(__file__)), f'trained_model_info/TabNet',
+    save_result_pth = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                   f'trained_model_info/TabNet',
                                    f'{datetime.date.today()}_{sampling}_f1_macro')
     os.makedirs(save_result_pth, exist_ok=True)
 
@@ -120,15 +121,38 @@ def hyperparam_tuning(feats, labels, sampling='ROS', n_trials=300):
     return study.best_params, study.best_value, save_result_pth
 
 
-def fine_tune(x_train,
-              x_test,
-              y_train,
-              y_test,
-              best_params,
-              sampling='None',
-              rif='no_rif',  # Only for saving path, pre-processing needs to be done before training
-              save_dir=None,
-              weights=None):
+def pre_train_tab(data_path, n_trials, sampling='ROS'):
+    '''
+    If rif is wanted, please pre-process before this func!
+
+    :param data_path: data path for all pre-processed ones
+    :param n_trials: running trials for hyper-params tuning
+    :param sampling: sampling used in pre-train (ROS)
+    :return:
+    '''
+    x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
+    y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
+
+    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
+    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
+
+    feats = pd.concat([x_train, x_test], axis=0).reset_index(drop=True)
+    labels = pd.concat([y_train, y_test], axis=0).reset_index(drop=True)
+    labels = pd.Series(labels['InjurySeverity'].values)
+
+    best_params, _, save_dir = hyperparam_tuning(feats, labels, sampling, n_trials)
+    return save_dir
+
+
+def retrain_tab_module(x_train,
+                       x_test,
+                       y_train,
+                       y_test,
+                       best_params,
+                       sampling='None',
+                       rif='no_rif',  # Only for saving path, pre-processing needs to be done before training
+                       save_dir=None,
+                       weights=None):
     """
     CASEWGT needs to be removed if no RIF!
 
@@ -143,10 +167,13 @@ def fine_tune(x_train,
     :param save_dir:
     :return:
     """
+    weight_str = 'default'
     if weights is None:
-        weights = {0: 1, 1: 1, 2: 1}
-    if sampling != 'None':
-        x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
+        weights = [1, 1, 1]
+    if sampling != 'None' or rif != 'no_rif':  # Use given class weights
+        weight_str = '_'.join(str(val) for val in weights)
+        if sampling != 'None':
+            x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
     else:
         classes = np.unique(y_train)
         weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train)
@@ -165,11 +192,11 @@ def fine_tune(x_train,
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        # eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
-        # eval_name=['train', 'test'],
-        # eval_metric=[f1_macro_for_eval],
+        eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
+        eval_name=['train', 'test'],
+        eval_metric=[f1_macro_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
-        max_epochs=2000,
+        max_epochs=1000,
         batch_size=512,
         patience=100,
         drop_last=False
@@ -181,7 +208,7 @@ def fine_tune(x_train,
     print('\nConfusion matrix:\n', conf_matrix)
 
     model_info = 'Retrain_Tab_' + rif + '_' + sampling + '_MultiClassification'
-    save_path = os.path.join(save_dir, model_info)
+    save_path = os.path.join(save_dir, model_info, weight_str)
     os.makedirs(save_path, exist_ok=True)
 
     # Save evaluations
@@ -192,55 +219,62 @@ def fine_tune(x_train,
     classification_report.to_csv(os.path.join(save_path, "classification_result.csv"), index=True)
 
     # Save class weights
-    with open(os.path.join(save_path, 'class_weights.json'), 'w') as cls_json:
-        json.dump(weights, cls_json)
+    with open(os.path.join(save_path, 'class_weights.txt'), 'w') as f:
+        f.write('{')
+        for i, wg in enumerate(weights):
+            f.write('\n')
+            f.writelines(f'{i}:  {wg}')
+        f.write('\n')
+        f.write('}')
+
     # Save model as .pkl
     joblib.dump(tab_clf, os.path.join(save_path, f'{model_info}.pkl'))
 
 
-def wrap_up_learning(data_path, n_trials, sampling='ROS', retrain_only=False):
-    '''
-    If rif is wanted, please pre-process before this func!
-
-    :param data_path: data path for all pre-processed ones
-    :param retrain_only: Use pre-trained params!
-    :param n_trials: running trials for hyper-params tuning
-    :param sampling: sampling used in pre-train (ROS)
-    :return:
-    '''
+def retrain_tab(data_path, param_path, weights):
     x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
     y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
+    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
+    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
     x_train_rif_rus = pd.read_csv(os.path.join(data_path, 'x_train_rif_rus.csv'))
     y_train_rif_rus = pd.read_csv(os.path.join(data_path, 'y_train_rif_rus.csv'))
 
-    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
-    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
+    y_train = pd.Series(y_train['InjurySeverity'].values)
+    y_train_rif_rus = pd.Series(y_train_rif_rus['InjurySeverity'].values)
+    y_test = pd.Series(y_test['InjurySeverity'].values)
 
-    feats = pd.concat([x_train, x_test], axis=1)  # TODO: Check concat! Why cp use reset_index and not here?
-    labels = pd.concat([y_train, y_test], axis=1)
+    if 'CASEWGT' in x_test.columns.values:
+        x_test = x_test.drop(columns=['CASEWGT'])
+    if 'CASEWGT' in x_train.columns.values:
+        x_train = x_train.drop(columns=['CASEWGT'])
 
-    if not retrain_only:
-        best_params, _, save_dir = hyperparam_tuning(feats, labels, sampling, n_trials)
-    else:
-        pass  # TODO: find best_params path as file save dir.
+    with open(os.path.join(param_path, 'param_dict.json'), 'r') as f:
+        best_params = json.load(f)
 
     rif_setting = [True, False]
     resampling_setting = ['None', 'ROS', 'ADASYN', 'SMOTETomek']
+
+    if weights != [1, 1, 1]:
+        del resampling_setting[0]
+
     for whether_rif in rif_setting:
         if whether_rif:
-            fine_tune(x_train_rif_rus, x_test, y_train_rif_rus, y_test, best_params,
-                      rif='rif_rus', sampling='None', save_dir=save_dir)
+            retrain_tab_module(x_train_rif_rus, x_test, y_train_rif_rus, y_test, best_params,
+                               rif='rif_rus', sampling='None', save_dir=param_path, weights=weights)
         else:
             for rsp in resampling_setting:
-                fine_tune(x_train, x_test, y_train, y_test, best_params,
-                          rif='no_rif', sampling=rsp, save_dir=save_dir)
+                retrain_tab_module(x_train, x_test, y_train, y_test, best_params,
+                                   rif='no_rif', sampling=rsp, save_dir=param_path, weights=weights)
 
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                              'data', 'Combined', 'no_one_hot')  # Deep learning do not need one_hot
-    N_TRIALS = 100
+    # N_TRIALS = 100
+    MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro')
+    CLASS_WEIGHTS = [[1, 1, 2], [1, 1, 3], [1, 1, 4], [1, 1, 5]]
 
-    wrap_up_learning(DATA_PATH, N_TRIALS, sampling='ROS', retrain_only=False)
-
-# TODO: TAB:Try balanced_accuracy! Modify best params and save path of wrap_up_training!
+    # save_path = pre_train_tab(DATA_PATH, N_TRIALS, sampling='ROS')
+    for class_wgt in CLASS_WEIGHTS:
+        retrain_tab(DATA_PATH, MODEL_PATH, class_wgt)

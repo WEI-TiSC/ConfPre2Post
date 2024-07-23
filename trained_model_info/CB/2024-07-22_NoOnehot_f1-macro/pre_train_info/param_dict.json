@@ -1,0 +1,12 @@
+{
+    "iterations": 1000,
+    "learning_rate": 0.006,
+    "random_strength": 7,
+    "bagging_temperature": 4,
+    "max_bin": 10,
+    "grow_policy": "Depthwise",
+    "min_data_in_leaf": 10,
+    "depth": 8,
+    "l2_leaf_reg": 4.3160284857579866e-08,
+    "one_hot_max_size": 10
+}

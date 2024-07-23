@@ -36,8 +36,8 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
     if not pure_train:
         x_test, x_half_calib, y_test, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
                                                                       shuffle=True, test_size=0.5, random_state=42)
-        x_calib = pd.concat([x_train, x_half_calib], axis=1).reset_index(drop=True) # TODO: Check concat!
-        y_calib = pd.concat([y_train, y_half_calib], axis=1).reset_index(drop=True)
+        x_calib = pd.concat([x_train, x_half_calib], axis=0).reset_index(drop=True) # TODO: Check concat!
+        y_calib = pd.concat([y_train, y_half_calib], axis=0).reset_index(drop=True)
     else:
         x_calib = x_train
         y_calib = y_train

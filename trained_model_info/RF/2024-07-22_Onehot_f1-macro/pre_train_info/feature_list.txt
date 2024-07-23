@@ -1,0 +1,109 @@
+Race_1
+Race_2
+Race_3
+Race_4
+Race_5
+Sex_1
+Sex_2
+Sex_3
+Sex_4
+Sex_5
+Sex_6
+Alcohol Present_0.0
+Alcohol Present_1.0
+Distracted in Driving_1.0
+Distracted in Driving_2.0
+premovement before collision_1
+premovement before collision_2
+premovement before collision_3
+premovement before collision_4
+premovement before collision_5
+premovement before collision_6
+premovement before collision_7
+premovement before collision_8
+premovement before collision_10
+premovement before collision_11
+premovement before collision_14
+premovement before collision_15
+premovement before collision_16
+premovement before collision_17
+premovement before collision_97
+Body Category_0
+Body Category_1
+Body Category_2
+Body Category_3
+Pre-event Location_1
+Pre-event Location_2
+Pre-event Location_3
+Pre-event Location_4
+Pre-event Location_5
+Pre-event Location_6
+Pre-event Location_7
+Surface Condition_1
+Surface Condition_2
+Surface Condition_3
+Surface Condition_4
+Surface Condition_5
+Surface Condition_6
+Surface Condition_8
+Traffic Condition_0
+Traffic Condition_1
+Traffic Condition_2
+Traffic Condition_3
+Traffic Condition_4
+Traffic Condition_5
+Traffic Condition_6
+Traffic Condition_8
+Surface Type_1
+Surface Type_2
+Surface Type_3
+Surface Type_4
+Surface Type_5
+Uphill or Downhill_1
+Uphill or Downhill_2
+Uphill or Downhill_3
+Uphill or Downhill_4
+Uphill or Downhill_5
+Crash Type_1
+Crash Type_2
+Crash Type_4
+Crash Type_5
+Crash Type_6
+Lighting Condition_1
+Lighting Condition_2
+Lighting Condition_3
+Lighting Condition_4
+Lighting Condition_5
+Related to Intersection_0
+Related to Intersection_1
+Related to Intersection_2
+Related to Intersection_3
+Related to Intersection_4
+Related to Intersection_5
+Traffic Conrtol Functioning_0
+Traffic Conrtol Functioning_1
+Traffic Conrtol Functioning_2
+Climate_1
+Climate_2
+Climate_3
+Climate_4
+Climate_5
+Climate_6
+Climate_7
+Climate_8
+Climate_9
+Climate_10
+Alignment of Road_1
+Alignment of Road_2
+Alignment of Road_3
+height
+weight
+Age
+Curb Weight
+Model Year
+Clock-form Direction of force
+Speed Limit
+Number of lanes
+year
+month
+Day in Week

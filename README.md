@@ -18,7 +18,7 @@ Flow:
       4. Evaluation: evaluate CP performance using `Average Set Size` and `Coverage`;
       5. Selection: Choose the best CP method.
 3. Analysis:
-   1. Check the performance with/without `$\Delta v$`;
+   1. Check the performance with/without `$\Delta v$` and `maneuver` (not pre-crash but important!);
    2. Use regular prediction result in 1.4, change it into binary problem and 
 compare the performance with other related research;
    3. Analyze hard examples in CP using medical history and other factors to

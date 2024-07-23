@@ -8,7 +8,7 @@ import os
 
 import pandas as pd
 
-from src.pkts import retrain_modules
+from src.pkts import retrain_modules, preprocessing_modules
 
 if __name__ == "__main__":
     models_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -30,23 +30,26 @@ if __name__ == "__main__":
 
     if not os.path.exists(x_noh_train_rif_path):
         # rif setting
-        x_noh_train_rif, y_noh_train_rif = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train)
-        x_noh_train_rif.to_csv(os.path.join(no_onehot_path, 'x_train_rif.csv'), index=False)
-        y_noh_train_rif.to_csv(os.path.join(no_onehot_path, 'y_train_rif.csv'), index=False)
+        # x_noh_train_rif, y_noh_train_rif = retrain_modules.prepare_rif_setting(x_noh_train, y_noh_train)
+        # x_noh_train_rif.to_csv(os.path.join(no_onehot_path, 'x_train_rif.csv'), index=False)
+        # y_noh_train_rif.to_csv(os.path.join(no_onehot_path, 'y_train_rif.csv'), index=False)
+        x_noh_train_rif = pd.read_csv(os.path.join(no_onehot_path, 'x_train_rif.csv'))
+        y_noh_train_rif = pd.read_csv(os.path.join(no_onehot_path, 'y_train_rif.csv'))
 
         # RUS sampling
-        x_noh_train_rif_rus, y_noh_train_rif_rus = retrain_modules.prepare_rif_setting(x_noh_train_rif, y_noh_train_rif)
+        x_noh_train_rif_rus, y_noh_train_rif_rus = preprocessing_modules.data_resampling(x_noh_train_rif, y_noh_train_rif, sampling_method='RUS')
         x_noh_train_rif_rus.to_csv(os.path.join(no_onehot_path, 'x_train_rif_rus.csv'), index=False)
         y_noh_train_rif_rus.to_csv(os.path.join(no_onehot_path, 'y_train_rif_rus.csv'), index=False)
 
     else:
         x_noh_train_rif_rus = pd.read_csv(x_noh_train_rif_path)
         y_noh_train_rif_rus = pd.read_csv(y_noh_train_fif_path)
-        q = y_noh_train_rif_rus.value_counts()
+        q1 = y_noh_train_rif_rus.value_counts()
         y_noh_train_rif_rus = pd.Series(y_noh_train_rif_rus['InjurySeverity'].values)
 
     x_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'x_test.csv'))
     y_noh_test = pd.read_csv(os.path.join(no_onehot_path, 'y_test.csv'))
+    y_noh_train = pd.Series(y_noh_train['InjurySeverity'].values)
     y_noh_test = pd.Series(y_noh_test['InjurySeverity'].values)
 
     if 'CASEWGT' in x_noh_test.columns.values:
@@ -56,8 +59,8 @@ if __name__ == "__main__":
 
     # ----------------------------------------------------------------------
     # Check if rif-ed file exists
-    x_oh_train_rif_path = os.path.join(one_hot_data_path, 'x_train_rif.csv')
-    y_oh_train_fif_path = os.path.join(one_hot_data_path, 'y_train_rif.csv')
+    x_oh_train_rif_path = os.path.join(one_hot_data_path, 'x_train_rif_rus.csv')
+    y_oh_train_fif_path = os.path.join(one_hot_data_path, 'y_train_rif_rus.csv')
 
     # No rif data
     x_oh_train = pd.read_csv(os.path.join(one_hot_data_path, 'x_train.csv'))
@@ -66,21 +69,25 @@ if __name__ == "__main__":
     # Prepare rif setting
     if not os.path.exists(x_oh_train_rif_path):
         x_oh_train_rif, y_oh_train_rif = retrain_modules.prepare_rif_setting(x_oh_train, y_oh_train)
-        x_oh_train.to_csv(os.path.join(one_hot_data_path, 'x_train_rif.csv'), index=False)
-        y_oh_train.to_csv(os.path.join(one_hot_data_path, 'y_train_rif.csv'), index=False)
+        x_oh_train_rif.to_csv(os.path.join(one_hot_data_path, 'x_train_rif.csv'), index=False)
+        y_oh_train_rif.to_csv(os.path.join(one_hot_data_path, 'y_train_rif.csv'), index=False)
+        # x_oh_train_rif = pd.read_csv(os.path.join(one_hot_data_path, 'x_train_rif.csv'))
+        # y_oh_train_rif = pd.read_csv(os.path.join(one_hot_data_path, 'y_train_rif.csv'))
 
         # RUS sampling
-        x_oh_train_rif_rus, y_oh_train_rif_rus = retrain_modules.prepare_rif_setting(x_oh_train_rif, y_oh_train_rif)
+        x_oh_train_rif_rus, y_oh_train_rif_rus = preprocessing_modules.data_resampling(x_oh_train_rif, y_oh_train_rif, sampling_method='RUS')
         x_oh_train_rif_rus.to_csv(os.path.join(one_hot_data_path, 'x_train_rif_rus.csv'), index=False)
         y_oh_train_rif_rus.to_csv(os.path.join(one_hot_data_path, 'y_train_rif_rus.csv'), index=False)
 
     else:
         x_oh_train_rif_rus = pd.read_csv(x_oh_train_rif_path)
         y_oh_train_rif_rus = pd.read_csv(y_oh_train_fif_path)
+        q2 = y_oh_train_rif_rus.value_counts()
         y_oh_train_rif_rus = pd.Series(y_oh_train_rif_rus['InjurySeverity'].values)
 
     x_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'x_test.csv'))
     y_oh_test = pd.read_csv(os.path.join(one_hot_data_path, 'y_test.csv'))
+    y_oh_train = pd.Series(y_oh_train['InjurySeverity'].values)
     y_oh_test = pd.Series(y_oh_test['InjurySeverity'].values)
 
     if 'CASEWGT' in x_oh_test.columns.values:
@@ -90,12 +97,14 @@ if __name__ == "__main__":
 
     # ----------------------------------------------------------------------
     # Set up retrain flow
-    class_weights = {0: 1, 1: 1, 2: 1}
+    class_weights = {0: 1, 1: 1, 2: 5}
     models_name = [each for each in os.listdir(models_path)]
     rif_setting = [True, False]  # TODO: Only RIF+RUS available, whether to add TomekLinks(10~ day costs)?
-    sampling_range = ['None', 'ROS', 'ADASYN', 'SMOTETomek']
+    sampling_range = ['ROS', 'ADASYN', 'SMOTETomek']
     one_hot_setting = [True, False]
     for model in models_name:
+        if model == 'TabNet':
+            continue
         model_param_dir_list = [x for x in os.listdir(os.path.join(models_path, model))]
         cur_save_dir = os.path.join(models_path, model)
 
