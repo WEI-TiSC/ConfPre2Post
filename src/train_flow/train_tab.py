@@ -2,7 +2,7 @@
 # Author : Junhao Wei
 # @file : train_tab.py
 # @Time : 2024/7/19 15:21
-# Interpretation: Implement of TabNet
+# Interpretation: 4. pretrain and retrain tab
 
 import json
 import os
@@ -122,14 +122,14 @@ def hyperparam_tuning(feats, labels, sampling='ROS', n_trials=300):
 
 
 def pre_train_tab(data_path, n_trials, sampling='ROS'):
-    '''
+    """
     If rif is wanted, please pre-process before this func!
 
     :param data_path: data path for all pre-processed ones
     :param n_trials: running trials for hyper-params tuning
     :param sampling: sampling used in pre-train (ROS)
     :return:
-    '''
+    """
     x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
     y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
 

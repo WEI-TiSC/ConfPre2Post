@@ -2,7 +2,7 @@
 # Author : Junhao Wei
 # @file : rif_under_sampling.py
 # @Time : 2024/7/21 22:53
-# Interpretation
+# Interpretation: rif resampling file (not used)
 
 import os
 import time

@@ -2,7 +2,7 @@
 # Author : Junhao Wei
 # @file : pre_processing.py
 # @Time : 2024/7/14 17:30
-# Interpretation: Flow of pre-processing.
+# Interpretation: 1. Flow of pre-processing.
 import os.path
 
 import numpy as np
@@ -62,13 +62,13 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
     assert round(len(y_train[y_train == 2]) / len(y_train), 3) == round(len(y_test[y_test == 2]) / len(y_test), 3), \
         'The proportion of severe samples in the training and testing sets is different！'
 
-    # Save train test dataset
-    train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
-    train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                       'data', 'Combined', one_hot_str)
-    os.makedirs(train_test_save_dir, exist_ok=True)
-    for df_name, df in train_test_data_dict.items():
-        df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'), index=False)
+    # TODO: re-open Save train test dataset after one-hot only pre-train finished!
+    # train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
+    # train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    #                                    'data', 'Combined', one_hot_str)
+    # os.makedirs(train_test_save_dir, exist_ok=True)
+    # for df_name, df in train_test_data_dict.items():
+    #     df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'), index=False)
 
     return feats, labels, x_train, x_test, y_train, y_test
 
