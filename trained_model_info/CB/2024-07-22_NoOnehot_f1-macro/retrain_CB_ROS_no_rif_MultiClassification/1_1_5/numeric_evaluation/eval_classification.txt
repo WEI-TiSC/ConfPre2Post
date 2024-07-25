@@ -1,6 +1,7 @@
 {
-f1_weighted:  0.3910795428249932
-f1_macro:  0.31431398678819383
-bin_f1_weighted:  0.6991233473418863
-bin_f1_macro:  0.42187578436071915
+f1_weighted:  0.3911
+f1_macro:  0.3143
+bin_f1_weighted:  0.6991
+bin_f1_macro:  0.4219
+bin_severe_recall:  0.6757
 }

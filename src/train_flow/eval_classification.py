@@ -10,7 +10,7 @@ import re
 import joblib
 import pandas as pd
 from sklearn import metrics, logger
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, recall_score
 
 
 def recalc_classification_metrics(model_path, data_path, one_hot):
@@ -41,8 +41,8 @@ def recalc_classification_metrics(model_path, data_path, one_hot):
     conf_matrix = metrics.confusion_matrix(labels, preds)
     conf_matrix_df = pd.DataFrame(conf_matrix, index=[0, 1, 2], columns=[0, 1, 2])
     conf_matrix_df.to_csv(os.path.join(eval_path, 'confusion_matrix.csv'))
-    f1_weighted = f1_score(labels, preds, average='weighted')
-    f1_macro = f1_score(labels, preds, average='macro')
+    f1_weighted = round(f1_score(labels, preds, average='weighted'), 4)
+    f1_macro = round(f1_score(labels, preds, average='macro'), 4)
 
     # Change into binary and calc bin
     bin_labels = copy.deepcopy(labels)
@@ -56,15 +56,17 @@ def recalc_classification_metrics(model_path, data_path, one_hot):
     bin_conf_matrix = metrics.confusion_matrix(bin_labels, bin_preds)
     bin_conf_matrix_df = pd.DataFrame(bin_conf_matrix, index=[0, 1], columns=[0, 1])
     bin_conf_matrix_df.to_csv(os.path.join(eval_path, 'bin_confusion_matrix.csv'))
-    bin_f1_weighted = f1_score(bin_labels, bin_preds, average='weighted')
-    bin_f1_macro = f1_score(bin_labels, bin_preds, average='macro')
+    bin_f1_weighted = round(f1_score(bin_labels, bin_preds, average='weighted'), 4)
+    bin_f1_macro = round(f1_score(bin_labels, bin_preds, average='macro'), 4)
+    bin_recall = round(recall_score(bin_labels, bin_preds), 4)
 
     # Save as dict
     save_form = {
         'f1_weighted': f1_weighted,
         'f1_macro': f1_macro,
         'bin_f1_weighted': bin_f1_weighted,
-        'bin_f1_macro': bin_f1_macro
+        'bin_f1_macro': bin_f1_macro,
+        'bin_severe_recall': bin_recall
     }
 
     with open(os.path.join(eval_path, 'eval_classification.txt'), 'w', encoding='utf-8') as f:
@@ -86,10 +88,9 @@ if __name__ == '__main__':
         cur_model_dir = os.path.join(model_list_dir, model_name)
         model_settings = os.listdir(cur_model_dir)
         for model_setting in model_settings:  # Whether onehot here
-            # one_hot = True
-            # if '_NoOnehot' not in model_setting:
-                # one_hot = False
-                # continue
+            one_hot = False
+            if '_Onehot' in model_setting:
+                one_hot = True
             model_setting_dir = os.path.join(cur_model_dir, model_setting)
             model_info_paths = os.listdir(model_setting_dir)
             # Find model *.pkl
@@ -104,10 +105,6 @@ if __name__ == '__main__':
                         if trained_info.endswith('.pkl'):
                             logger.info(f'Find modelin {trained_model_path} as {trained_info}, prepare to eval...')
                             abs_model_path = os.path.join(trained_model_path, trained_info)
-                            # recalc_classification_metrics(model_path=abs_model_path,
-                            #                                   data_path=data_path,
-                            #                                   one_hot=one_hot)
                             recalc_classification_metrics(model_path=abs_model_path,
                                                               data_path=data_path,
-                                                              one_hot=False)
-# TODO: modify to finish one-hot models!
+                                                              one_hot=one_hot)

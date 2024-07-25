@@ -97,10 +97,11 @@ if __name__ == "__main__":
 
     # ----------------------------------------------------------------------
     # Set up retrain flow
-    class_weights = {0: 1, 1: 1, 2: 5}
+    class_weights = [{0: 1, 1: 1, 2: 2}, {0: 1, 1: 1, 2: 3}, {0: 1, 1: 1, 2: 4}, {0: 1, 1: 1, 2: 5}]
     models_name = [each for each in os.listdir(models_path)]
     rif_setting = [True, False]  # TODO: Only RIF+RUS available, whether to add TomekLinks(10~ day costs)?
     sampling_range = ['ROS', 'ADASYN', 'SMOTETomek']
+    # sampling_range = ['None']
     # one_hot_setting = [True, False]
     one_hot_setting = [True]
     for model in models_name:
@@ -110,24 +111,27 @@ if __name__ == "__main__":
         cur_save_dir = os.path.join(models_path, model)
 
         for ml_setting in model_param_dir_list:
+            if not ml_setting.startswith('2024-07-24_Onehot'):
+                continue
             pre_train_params = os.path.join(models_path, model, ml_setting, 'pre_train_info', 'param_dict.json')
             with open(pre_train_params, 'r', encoding='utf-8') as f:
                 param_dict = json.load(fp=f)
 
             # Get sure about whether one-hot
-            for one_hot in one_hot_setting:
-                if one_hot:
-                    for rif_set in rif_setting:
-                        if rif_set:
-                            retrain_modules.retrain(model, param_dict, x_oh_train_rif_rus, y_oh_train_rif_rus,
-                                                    x_oh_test, y_oh_test,
-                                                    sampling='None', rifed='rifed_RUS', class_weights=class_weights,
-                                                    save_dir=os.path.join(cur_save_dir, ml_setting))
-                        else:
-                            for sampling in sampling_range:
-                                retrain_modules.retrain(model, param_dict, x_oh_train, y_oh_train, x_oh_test, y_oh_test,
-                                                        sampling=sampling, rifed='no_rif', class_weights=class_weights,
+            for cls_wgt in class_weights:
+                for one_hot in one_hot_setting:
+                    if one_hot:
+                        for rif_set in rif_setting:
+                            if rif_set:
+                                retrain_modules.retrain(model, param_dict, x_oh_train_rif_rus, y_oh_train_rif_rus,
+                                                        x_oh_test, y_oh_test,
+                                                        sampling='None', rifed='rifed_RUS', class_weights=cls_wgt,
                                                         save_dir=os.path.join(cur_save_dir, ml_setting))
+                            else:
+                                for sampling in sampling_range:
+                                    retrain_modules.retrain(model, param_dict, x_oh_train, y_oh_train, x_oh_test, y_oh_test,
+                                                            sampling=sampling, rifed='no_rif', class_weights=cls_wgt,
+                                                            save_dir=os.path.join(cur_save_dir, ml_setting))
 
                 # else:
                 #     for rif_set in rif_setting:
