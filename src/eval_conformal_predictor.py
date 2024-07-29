@@ -34,7 +34,7 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
     clf = joblib.load(model_path)
 
     if not pure_train:
-        _, x_half_calib, _, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
+        x_test, x_half_calib, y_test, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
                                                                       shuffle=True, test_size=0.5, random_state=42)
         x_calib = pd.concat([x_train, x_half_calib], axis=0).reset_index(drop=True)
         y_calib = pd.concat([y_train, y_half_calib], axis=0).reset_index(drop=True)
@@ -67,31 +67,10 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
 
     # Evaluation
     model_info = model_name + cp_method
-    save_path = os.path.join(os.path.dirname(model_path), f'{model_info}')
+    save_path = os.path.join(os.path.dirname(os.path.dirname(model_path)), f'{model_info}')
     os.makedirs(save_path, exist_ok=True)
 
     eval_CP.draw_coverage(conf_sets, y_test, cp_method, save_path, model_info, alpha=alpha)
     eval_CP.draw_set_sizes(conf_sets, cp_method, save_path, model_info, alpha=alpha)
 
     # TODO: save CP results for hard sample analysis
-
-
-if  __name__ == '__main__':
-    model_name = 'RF'
-    model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                              'trained_model_info', model_name, '2024-07-22_NoOnehot_f1-macro',
-                              'retrain_RF_ROS_no_rif_MultiClassification', '1_1_3',
-                              'retrain_RF_ROS_no_rif_MultiClassification.pkl')
-    data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'data', 'Combined', 'no_one_hot')
-    x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
-    y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
-    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
-    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
-    x_train = x_train.drop(columns=['CASEWGT'])
-    x_test = x_test.drop(columns=['CASEWGT'])
-    y_train = pd.Series(y_train['InjurySeverity'].values)
-    y_test = pd.Series(y_test['InjurySeverity'].values)
-
-    eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
-                    pure_train=False, cp_method='Naive', alpha=0.1)

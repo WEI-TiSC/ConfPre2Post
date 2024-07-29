@@ -17,6 +17,7 @@ from sklearn.utils import compute_class_weight
 
 from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
 from src.pkts.my_logger import logger
+from src.pkts.preprocessing_modules import CATEGORY_FEATURES
 
 
 def prepare_rif_setting(x_train, y_train):

@@ -54,6 +54,7 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
         feats, labels = data_combined.drop(columns=['InjurySeverity']), data_combined['InjurySeverity']
     else:
         feats, labels = df_features.drop(columns=['InjurySeverity']), df_features['InjurySeverity']
+    feats = feats.astype('int')
 
     x_train, x_test, y_train, y_test = train_test_split(feats, labels, stratify=labels,
                                                         shuffle=True, test_size=0.20,
@@ -63,12 +64,12 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
         'The proportion of severe samples in the training and testing sets is different！'
 
     # TODO: re-open Save train test dataset after one-hot only pre-train finished!
-    # train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
-    # train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    #                                    'data', 'Combined', one_hot_str)
-    # os.makedirs(train_test_save_dir, exist_ok=True)
-    # for df_name, df in train_test_data_dict.items():
-    #     df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'), index=False)
+    train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
+    train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                       'data', 'Combined', one_hot_str)
+    os.makedirs(train_test_save_dir, exist_ok=True)
+    for df_name, df in train_test_data_dict.items():
+        df.to_csv(os.path.join(train_test_save_dir, f'{df_name}.csv'), index=False)
 
     return feats, labels, x_train, x_test, y_train, y_test
 

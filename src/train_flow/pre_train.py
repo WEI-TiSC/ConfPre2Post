@@ -5,9 +5,6 @@
 # Interpretation: 2. Train to find best param-method pair for different models.
 import os
 
-import pandas as pd
-
-from src.pkts import preprocessing_modules
 from src.train_flow import pre_processing
 from src.pkts.preprocessing_modules import ALL_PRE_FEATURES
 from src.pkts.pretrain_modules import param_search_by_optuna
