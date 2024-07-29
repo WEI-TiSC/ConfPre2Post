@@ -62,7 +62,7 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
         retrain_model = RandomForestClassifier(oob_score=True, random_state=42, class_weight=class_weights, **params)
     elif model == 'CB':
         retrain_model = CatBoostClassifier(verbose=True, loss_function='MultiClassOneVsAll',
-                                           class_weights=class_weights, **params)
+                                           class_weights=class_weights, cat_features=CATEGORY_FEATURES, **params)
     else:
         raise ValueError("Unknown model!")
 

@@ -23,7 +23,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import compute_class_weight
 
 from src.pkts.my_logger import logger
-from src.pkts.preprocessing_modules import data_resampling
+from src.pkts.preprocessing_modules import data_resampling, CATEGORY_FEATURES
 
 
 def param_grid_dict_LGBM(trial):
@@ -197,7 +197,7 @@ def pre_train_CB(x_train, x_cv, y_train, y_cv, param_grids, cv_scores, idx, metr
     :return:
     """
     model = CatBoostClassifier(verbose=False, loss_function='MultiClassOneVsAll',
-                               class_weights=class_weight, **param_grids)
+                               class_weights=class_weight, cat_features=CATEGORY_FEATURES, **param_grids)
     model.fit(x_train, y_train, early_stopping_rounds=150)
     pred_y = model.predict(x_cv)
 
