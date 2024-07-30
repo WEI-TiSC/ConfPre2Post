@@ -37,6 +37,21 @@ def calc_average_set_size(conf_set):
     return avg_size
 
 
+def calc_avg_set_size_by_class(conf_set, y_true, n_class=3):
+    total_size = [0 for _ in range(n_class)]
+    total_cases = [0 for _ in range(n_class)]
+    avg_size_by_class = [0 for _ in range(n_class)]
+
+    for i, val in enumerate(y_true):
+        total_cases[val] += 1
+        total_size[val] += len(conf_set[i])
+
+    avg_size_all = round(sum(total_size)/sum(total_cases), 2)
+    for i in range(n_class):
+        avg_size_by_class[i] = round(total_size[i]/total_cases[i], 2)
+    return avg_size_all, avg_size_by_class
+
+
 def calc_ssc_metric(conf_set, y_true):
     """
     ssc = total_involved_samples_num / total_prediction_set_size
@@ -45,9 +60,9 @@ def calc_ssc_metric(conf_set, y_true):
     involved_sum = 0
     total_set_size = 0
 
-    for i in range(len(conf_set)):
+    for i, val in enumerate(y_true):
         total_set_size += len(conf_set[i])
-        if y_true in conf_set[i].keys():
+        if val in conf_set[i].keys():
             involved_sum += 1
 
     ssc_metric = round(involved_sum / total_set_size, 3)
@@ -77,6 +92,7 @@ def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha):
 
     plt.savefig(
         os.path.join(save_path, f'Set size distribution of {model_info} under {1 - alpha} confidence level.png'))
+    plt.clf()
     # plt.show()
 
 
@@ -116,4 +132,5 @@ def draw_coverage(conf_set, y_true, cp_type: str, save_path, model_info, alpha):
     plt.ylabel('Coverage')
 
     plt.savefig(os.path.join(save_path, f'Class-wise coverage of {model_info} under {1 - alpha} confidence level.png'))
+    plt.clf()
     # plt.show()

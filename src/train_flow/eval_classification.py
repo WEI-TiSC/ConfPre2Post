@@ -82,12 +82,14 @@ if __name__ == '__main__':
     model_list_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                                   'trained_model_info')
     data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                                  'data', 'Combined')
+                             'data', 'Combined')
     model_names = os.listdir(model_list_dir)
     for model_name in model_names:
         cur_model_dir = os.path.join(model_list_dir, model_name)
         model_settings = os.listdir(cur_model_dir)
         for model_setting in model_settings:  # Whether onehot here
+            if not model_setting.startswith('2024-07-30'):
+                continue
             one_hot = False
             if '_Onehot' in model_setting:
                 one_hot = True
@@ -106,5 +108,5 @@ if __name__ == '__main__':
                             logger.info(f'Find modelin {trained_model_path} as {trained_info}, prepare to eval...')
                             abs_model_path = os.path.join(trained_model_path, trained_info)
                             recalc_classification_metrics(model_path=abs_model_path,
-                                                              data_path=data_path,
-                                                              one_hot=one_hot)
+                                                          data_path=data_path,
+                                                          one_hot=one_hot)

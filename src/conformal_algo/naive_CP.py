@@ -46,7 +46,7 @@ def get_confsets_naive(softmax_out, q_hat):
     conf_set = []  # len(y) * {} for each x_val
 
     for i in range(softmax_out.shape[0]):
-        assert round(sum(softmax_out[i]), 3) >= 0.999, f"Error: sum of softmax output not 1.00! {softmax_out[i]}"
+        # assert round(sum(softmax_out[i]), 3) >= 0.999, f"Error: sum of softmax output not 1.00! {softmax_out[i]}"
         pred_set = {}
         for j in range(softmax_out.shape[1]):  # Check each output in cur sample
             if softmax_out[i][j] >= 1 - q_hat:

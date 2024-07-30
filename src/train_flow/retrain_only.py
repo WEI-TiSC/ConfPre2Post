@@ -44,6 +44,7 @@ if __name__ == "__main__":
     else:
         x_noh_train_rif_rus = pd.read_csv(x_noh_train_rif_path)
         y_noh_train_rif_rus = pd.read_csv(y_noh_train_fif_path)
+        x_noh_train_rif_rus = x_noh_train_rif_rus.astype('int')
         q1 = y_noh_train_rif_rus.value_counts()
         y_noh_train_rif_rus = pd.Series(y_noh_train_rif_rus['InjurySeverity'].values)
     #
@@ -104,13 +105,13 @@ if __name__ == "__main__":
     # sampling_range = ['None']
     one_hot_setting = [True, False]
     for model in models_name:
-        if model == 'TabNet':
+        if model == 'TabNet' or model == 'RF':
             continue
         model_param_dir_list = [x for x in os.listdir(os.path.join(models_path, model))]
         cur_save_dir = os.path.join(models_path, model)
 
         for ml_setting in model_param_dir_list:
-            if not ml_setting.startswith('2024-07-24_Onehot'):
+            if not ml_setting.startswith('2024-07-30_NoOnehot'):
                 continue
             pre_train_params = os.path.join(models_path, model, ml_setting, 'pre_train_info', 'param_dict.json')
             with open(pre_train_params, 'r', encoding='utf-8') as f:

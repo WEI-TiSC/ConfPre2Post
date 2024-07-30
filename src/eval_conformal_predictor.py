@@ -7,6 +7,7 @@ import os
 
 import joblib
 import pandas as pd
+import torch.nn
 from sklearn.model_selection import train_test_split
 
 from src.conformal_algo import naive_CP, APS_CP, CCCP, eval_CP
@@ -42,12 +43,20 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
         x_calib = x_train
         y_calib = y_train
 
-    if model_name == 'TN':
-        y_calib_softmax = clf.predict_proba(x_calib.values)
-        y_test_softmax = clf.predict_proba(x_test.values)
+    if model_name == 'TabNet':
+        y_calib_prob = clf.predict_proba(x_calib.values)
+        y_test_prob = clf.predict_proba(x_test.values)
     else:
-        y_calib_softmax = clf.predict_proba(x_calib)
-        y_test_softmax = clf.predict_proba(x_test)
+        y_calib_prob = clf.predict_proba(x_calib)
+        y_test_prob = clf.predict_proba(x_test)
+
+    y_calib_tensor = torch.tensor(y_calib_prob)
+    y_test_tensor = torch.tensor(y_test_prob)
+
+    # 初始化 Softmax 对象并在指定维度上应用
+    softmax = torch.nn.Softmax(dim=1)
+    y_calib_softmax = softmax(y_calib_tensor)
+    y_test_softmax = softmax(y_test_tensor)
 
     # Calibration
     if cp_method == 'Naive':
@@ -67,10 +76,47 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
 
     # Evaluation
     model_info = model_name + cp_method
-    save_path = os.path.join(os.path.dirname(os.path.dirname(model_path)), f'{model_info}')
+    save_path = os.path.join(os.path.dirname(model_path), f'{model_info}')
     os.makedirs(save_path, exist_ok=True)
 
     eval_CP.draw_coverage(conf_sets, y_test, cp_method, save_path, model_info, alpha=alpha)
     eval_CP.draw_set_sizes(conf_sets, cp_method, save_path, model_info, alpha=alpha)
 
+    avg_size, avg_size_by_class = eval_CP.calc_avg_set_size_by_class(conf_sets, y_test)
+    ssc_metric = eval_CP.calc_ssc_metric(conf_sets, y_test)
+
+    with open(os.path.join(save_path, 'Eval_info.txt'), 'w') as f:
+        f.write('SSC Metric is: %s \n' % ssc_metric)
+        f.write('Total average set size is: %s \n' % avg_size)
+
+        for i, sz in enumerate(avg_size_by_class):
+            f.write('Average set size of class %s is: %s \n' %(i, sz))
+
     # TODO: save CP results for hard sample analysis
+
+
+if __name__ == '__main__':
+    model_name = 'TabNet'
+    pretrain_info = '2024-07-23_ROS_f1_macro'
+    retrain_info = 'Retrain_Tab_no_rif_ROS_MultiClassification'
+    class_weight_info = '1_1_4'
+    model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                              'trained_model_info', model_name, pretrain_info, retrain_info,
+                              class_weight_info, f'{retrain_info}.pkl')
+    data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Combined',
+                             'no_one_hot')
+    x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
+    y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
+    x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
+    y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
+    y_train = pd.Series(y_train['InjurySeverity'].values)
+    y_test = pd.Series(y_test['InjurySeverity'].values)
+
+    if 'CASEWGT' in x_train.columns:
+        x_train = x_train.drop(columns=['CASEWGT'])
+        x_test = x_test.drop(columns=['CASEWGT'])
+
+    eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
+                 pure_train=False, cp_method='Naive', alpha=0.1)
+
+# TODO: 20% data for calib, so that data distribition is 6:2:2?
