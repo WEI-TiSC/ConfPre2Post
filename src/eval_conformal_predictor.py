@@ -96,15 +96,15 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
 
 
 if __name__ == '__main__':
-    model_name = 'TabNet'
-    pretrain_info = '2024-07-23_ROS_f1_macro'
-    retrain_info = 'Retrain_Tab_no_rif_ROS_MultiClassification'
-    class_weight_info = '1_1_4'
+    model_name = 'RF'
+    pretrain_info = '2024-07-24_Onehot_f1-macro'
+    retrain_info = 'retrain_RF_ROS_no_rif_MultiClassification'
+    class_weight_info = '1_1_3'
     model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                               'trained_model_info', model_name, pretrain_info, retrain_info,
                               class_weight_info, f'{retrain_info}.pkl')
     data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Combined',
-                             'no_one_hot')
+                             'with_one_hot')
     x_train = pd.read_csv(os.path.join(data_path, 'x_train.csv'))
     y_train = pd.read_csv(os.path.join(data_path, 'y_train.csv'))
     x_test = pd.read_csv(os.path.join(data_path, 'x_test.csv'))
