@@ -1,0 +1,9 @@
+{
+    "n_d": 20,
+    "n_steps": 4,
+    "gamma": 1.7000000000000002,
+    "n_shared": 1,
+    "lambda_sparse": 8.78637597156807e-06,
+    "n_independent": 5,
+    "mask_type": "entmax"
+}

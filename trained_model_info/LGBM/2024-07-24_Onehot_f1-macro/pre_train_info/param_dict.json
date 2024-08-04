@@ -1,0 +1,13 @@
+{
+    "n_estimators": 182,
+    "learning_rate": 0.05,
+    "num_leaves": 620,
+    "max_depth": 10,
+    "min_child_samples": 10,
+    "reg_alpha": 0,
+    "reg_lambda": 80,
+    "min_split_gain": 0.6000000000000001,
+    "bagging_fraction": 0.75,
+    "feature_fraction": 0.7,
+    "boosting_type": "gbdt"
+}

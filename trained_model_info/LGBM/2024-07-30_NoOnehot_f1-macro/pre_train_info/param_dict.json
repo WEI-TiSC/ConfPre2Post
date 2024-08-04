@@ -1,0 +1,13 @@
+{
+    "n_estimators": 287,
+    "learning_rate": 0.31,
+    "num_leaves": 330,
+    "max_depth": 7,
+    "min_child_samples": 50,
+    "reg_alpha": 0,
+    "reg_lambda": 16,
+    "min_split_gain": 2.0,
+    "bagging_fraction": 0.95,
+    "feature_fraction": 0.6000000000000001,
+    "boosting_type": "dart"
+}

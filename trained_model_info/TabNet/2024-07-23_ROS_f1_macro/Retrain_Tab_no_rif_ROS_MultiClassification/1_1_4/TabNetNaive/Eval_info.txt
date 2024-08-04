@@ -1,0 +1,5 @@
+SSC Metric is: 0.433 
+Total average set size is: 2.02 
+Average set size of class 0 is: 2.04 
+Average set size of class 1 is: 2.02 
+Average set size of class 2 is: 1.78 

@@ -3,6 +3,7 @@
 # @file : retrain_modules.py
 # @Time : 2024/7/16 1:27
 # Interpretation
+import json
 import os
 
 import joblib
@@ -16,6 +17,7 @@ from sklearn.utils import compute_class_weight
 
 from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
 from src.pkts.my_logger import logger
+from src.pkts.preprocessing_modules import CATEGORY_FEATURES
 
 
 def prepare_rif_setting(x_train, y_train):
@@ -43,8 +45,11 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     """
     assert model in ['LGBM', 'CB', 'RF'], 'Unknown model!'
 
-    if sampling != 'None':  # Use given class weights
-        x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
+    weight_str = 'weight_default'
+    if sampling != 'None' or rifed != 'no_rif':  # Use given class weights
+        weight_str = '_'.join(str(val) for key, val in class_weights.items())
+        if sampling != 'None':
+            x_train, y_train = prepro_modules.data_resampling(x_train, y_train, sampling_method=sampling)
     else:  # Calc class weights
         classes = np.unique(y_train)
         weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train)
@@ -58,7 +63,7 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
         retrain_model = RandomForestClassifier(oob_score=True, random_state=42, class_weight=class_weights, **params)
     elif model == 'CB':
         retrain_model = CatBoostClassifier(verbose=True, loss_function='MultiClassOneVsAll',
-                                           class_weights=class_weights, **params)
+                                           class_weights=class_weights, cat_features=CATEGORY_FEATURES, **params)
     else:
         raise ValueError("Unknown model!")
 
@@ -79,8 +84,8 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     print('\n' * 3, 'Confusion matrix:\n', conf_matrix)
 
     # Draw Heatmap
-    model_info = 'retrain_' + model + '_' + rifed + '_MultiClassification'
-    model_save_dir = os.path.join(save_dir, model_info)
+    model_info = 'retrain_' + model + '_' + sampling + '_' + rifed + '_MultiClassification'
+    model_save_dir = os.path.join(save_dir, model_info, weight_str)
     os.makedirs(model_save_dir, exist_ok=True)
 
     eval_metrics.draw_confusion_matrix(y_test, y_pred, model_save_dir, model_info)
@@ -89,6 +94,15 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
     classification_report = metrics.classification_report(y_test, y_pred, digits=4, output_dict=True)
     classification_report = pd.DataFrame(classification_report).transpose()
     classification_report.to_csv(os.path.join(model_save_dir, "classification_result.csv"), index=True)
+
+    # Save class weights
+    with open(os.path.join(model_save_dir, 'class_weights.txt'), 'w') as f:
+        f.write('{')
+        for key in class_weights.keys():
+            f.write('\n')
+            f.writelines(f'{key}:  {class_weights[key]}')
+        f.write('\n')
+        f.write('}')
 
     # Save model as .pkl
     joblib.dump(retrain_model, os.path.join(model_save_dir, f'{model_info}.pkl'))

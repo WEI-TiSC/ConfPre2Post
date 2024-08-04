@@ -1,0 +1,7 @@
+{
+f1_weighted:  0.3911
+f1_macro:  0.3143
+bin_f1_weighted:  0.6991
+bin_f1_macro:  0.4219
+bin_severe_recall:  0.6757
+}
