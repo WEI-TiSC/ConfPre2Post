@@ -15,7 +15,7 @@ from src.pkts.my_logger import logger
 
 
 def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
-                 pure_train=False, cp_method='Naive', alpha=0.1):
+                 test_in_calib=False, cp_method='Naive', alpha=0.1):
     """
     Retrain with CP or Eval with CP.
         Retrain: Data not that sufficient but
@@ -29,12 +29,12 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
     :param y_train:
     :param x_test:
     :param y_test:
-    :param pure_train: Whether 1/2 test data is used for calibration
+    :param test_in_calib: Whether 1/2 test data is used for calibration
     :return:
     """
     clf = joblib.load(model_path)
 
-    if not pure_train:
+    if test_in_calib:
         x_test, x_half_calib, y_test, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
                                                                       shuffle=True, test_size=0.5, random_state=42)
         x_calib = pd.concat([x_train, x_half_calib], axis=0).reset_index(drop=True)
@@ -92,7 +92,7 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
         for i, sz in enumerate(avg_size_by_class):
             f.write('Average set size of class %s is: %s \n' %(i, sz))
 
-    # TODO: save CP results for hard sample analysis
+    return y_test_softmax
 
 
 if __name__ == '__main__':
@@ -117,6 +117,4 @@ if __name__ == '__main__':
         x_test = x_test.drop(columns=['CASEWGT'])
 
     eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
-                 pure_train=False, cp_method='Naive', alpha=0.1)
-
-# TODO: 20% data for calib, so that data distribition is 6:2:2?
+                 test_in_calib=False, cp_method='Naive', alpha=0.1)

@@ -192,9 +192,9 @@ def retrain_tab_module(x_train,
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
-        eval_name=['train', 'test'],
-        eval_metric=[f1_macro_for_eval],
+        # eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
+        # eval_name=['train', 'test'],
+        # eval_metric=[f1_macro_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
         max_epochs=1000,
         batch_size=512,
