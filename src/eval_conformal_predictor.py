@@ -200,10 +200,10 @@ def tensor_to_float_dict(tensor_dict):
 
 
 if __name__ == '__main__':
-    model_name = 'TabNet'
-    pretrain_info = '2024-07-23_ROS_f1_macro'
-    retrain_info = 'Retrain_Tab_no_rif_ROS_MultiClassification'
-    class_weight_info = '1_1_3'
+    model_name = 'LGBM'
+    pretrain_info = '2024-07-30_NoOnehot_f1-macro'
+    retrain_info = 'retrain_LGBM_ROS_no_rif_MultiClassification'
+    class_weight_info = '1_1_4'
     model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                               'trained_model_info', model_name, pretrain_info, retrain_info,
                               class_weight_info, f'{retrain_info}.pkl')
@@ -239,4 +239,4 @@ if __name__ == '__main__':
     y_calib = pd.concat([y_train, y_half_calib], axis=0).reset_index(drop=True)
 
     eval_with_cp_and_save_conf_set(model_name, model_path, x_calib, y_calib, x_test, y_test, x_test_anl,
-                                cp_method='Naive', alpha=0.1)
+                                cp_method='CCCP', alpha=0.10)

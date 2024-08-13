@@ -7,10 +7,10 @@ from src.pkts.my_logger import logger
 # Adaptive Prediction Set (APS)
 
 # Key:
-    # 1. Choose s(x,y) = SUM_{i=1}^k pi(x)_y till we reach the true class. Which is, the correct answer always in set!
-    # 2. s(x,y)= SUM_{i=1}^k hat_pi(x)_y, and compute the quantile hat_q.
-    # 3. Make prediction with confidence 1-alpha as:
-              #  C(x_val) = {y: SUM_{i=1}^k pi(x)_y >= hat_q}
+# 1. Choose s(x,y) = SUM_{i=1}^k pi(x)_y till we reach the true class. Which is, the correct answer always in set!
+# 2. s(x,y)= SUM_{i=1}^k hat_pi(x)_y, and compute the quantile hat_q.
+# 3. Make prediction with confidence 1-alpha as:
+#  C(x_val) = {y: SUM_{i=1}^k pi(x)_y >= hat_q}
 ##########
 def get_true_idx(y_pred, y_true):
     """
@@ -44,7 +44,7 @@ def calc_qhat_aps(y_softmax, y_cal, alpha=0.1):
         if round(sum_densitys[i], 3) >= 1.000:
             worst_prediction += 1
     logger.warning("%s cases out of total %s cases are worst prediction!" % (worst_prediction, len(sum_densitys)))  # 真实结果在最后就是废的
-    q_hat = np.quantile(sum_densitys, np.ceil((calib_length + 1) * (1 - alpha))/calib_length)
+    q_hat = np.quantile(sum_densitys, np.ceil((calib_length + 1) * (1 - alpha)) / calib_length)
     return q_hat
 
 
@@ -66,7 +66,7 @@ def get_confsets_APS(softmax_out, q_hat):
         pred_set = {}
 
         for j in range(idx + 1):
-            app_class_idx = np.where(cur_softmax==np.sort(cur_softmax)[::-1][j])[0][0]
+            app_class_idx = np.where(cur_softmax == np.sort(cur_softmax)[::-1][j])[0][0]
             class_prob = cur_softmax[app_class_idx]
             pred_set[app_class_idx] = class_prob
 
