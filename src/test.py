@@ -35,10 +35,19 @@ from src.pkts.preprocessing_modules import ALL_PRE_FEATURES
 # for cls in class_weights:
 #     print(cls)
 
-data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                         'data', 'Combined', 'CombineNassCiss.csv')
-df = pd.read_csv(data_path, index_col=0)
-ALL_PRE_FEATURES.remove('CASEWGT')
-for feat in ALL_PRE_FEATURES:
-    df = df[df[feat] != 65536]
-print(df)
+# data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+#                          'data', 'Combined', 'CombineNassCiss.csv')
+# df = pd.read_csv(data_path, index_col=0)
+# ALL_PRE_FEATURES.remove('CASEWGT')
+# for feat in ALL_PRE_FEATURES:
+#     df = df[df[feat] != 65536]
+# print(df)
+
+
+a = [[0.3229, 0.4390], [0.2, 0.7]]
+
+for each in a:
+    new_each = np.array(each)
+    each  = new_each/np.sum(each)
+    print(each)
+

@@ -106,3 +106,4 @@ def retrain(model, params, x_train, y_train, x_test, y_test, sampling='None', ri
 
     # Save model as .pkl
     joblib.dump(retrain_model, os.path.join(model_save_dir, f'{model_info}.pkl'))
+    return model_save_dir, model_info

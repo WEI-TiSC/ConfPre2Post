@@ -63,7 +63,6 @@ def get_processed_data(input_df: str, use_features: list, one_hot=False, cat_fea
     assert round(len(y_train[y_train == 2]) / len(y_train), 3) == round(len(y_test[y_test == 2]) / len(y_test), 3), \
         'The proportion of severe samples in the training and testing sets is different！'
 
-    # TODO: re-open Save train test dataset after one-hot only pre-train finished!
     train_test_data_dict = {'x_train': x_train, 'y_train': y_train, 'x_test': x_test, 'y_test': y_test}
     train_test_save_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                        'data', 'Combined', one_hot_str)

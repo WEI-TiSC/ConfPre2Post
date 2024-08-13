@@ -192,9 +192,9 @@ def retrain_tab_module(x_train,
     tab_clf.fit(
         X_train=x_train.values,
         y_train=y_train,
-        # eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
-        # eval_name=['train', 'test'],
-        # eval_metric=[f1_macro_for_eval],
+        eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
+        eval_name=['train', 'test'],
+        eval_metric=[f1_macro_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
         max_epochs=1000,
         batch_size=512,
@@ -229,6 +229,8 @@ def retrain_tab_module(x_train,
 
     # Save model as .pkl
     joblib.dump(tab_clf, os.path.join(save_path, f'{model_info}.pkl'))
+    return save_path, model_info
+
 
 
 def retrain_tab(data_path, param_path, weights):

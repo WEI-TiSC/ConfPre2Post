@@ -14,6 +14,7 @@ def draw_confusion_matrix(y_test, y_pred, save_path, model_info):
     disp.plot()
 
     plt.savefig(os.path.join(save_path, f'confusion matrix of {model_info}.png'))
+    plt.clf()
     # plt.show()
 
 
