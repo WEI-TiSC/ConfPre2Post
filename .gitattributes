@@ -1,2 +1,0 @@
-data/Combined/no_one_hot/x_train_rif.csv filter=lfs diff=lfs merge=lfs -text
-data/Combined/no_one_hot/x_train_rif_rus.csv filter=lfs diff=lfs merge=lfs -text
