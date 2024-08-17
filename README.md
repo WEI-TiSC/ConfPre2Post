@@ -10,6 +10,7 @@ Flow:
    1. Data pre-processing: create ROS with/without one_hot for pretrain;
    2. Pretrain: select best hyper-params of models using Optuna; 
    3. Retrain: based on pretrain hyper-params, retrain model by different sampling and evaluate performance;
+      - Train: Calib: Test = 8: 9: 1 (Calib = Train + 1/2 Test)
    4. Best Combination Selection: based on retrain results, decide the best combination for CP construction.
 2. Conformal Prediction Implementation
    1. Preparation: Naive, APS, CCCP (with/without adaptive weights);
@@ -30,20 +31,10 @@ draw an analytical result.
 ## Point
 
 1. Retrain with rif-data without rus performs worst for only 1% severe data exist.
-2. ROS must be tried for both pre-train and retrain.
-3. CCCP: different threshold! {0.8, 0.8, 0.9} might be good.
 
-
-- **Important**: Only divide into with/without one-hot in hyper-params tuning, 
-and retrain all data-sets using tha params!
-  - Pretrain: ROS data (with/without onehot);
-  - Retrain: All sampling sets.
-
-- Class_weight or SMOTE-based techs not proper for this task!
-  - Class_weight cannot change the situation of lack on severe data
+2. SMOTE-based techs not proper for this task!
   - SMOTE-based techs interpolates between minority class samples to generate new synthetic samples,
-however, quality of generated data seems to be not that good for non-severe and severe data are like each other. 
-
+however, quality of generated data seems to be not that good for non-severe and severe data are like each other.
 
 ---
 
@@ -52,12 +43,14 @@ however, quality of generated data seems to be not that good for non-severe and 
 ### Data relationship Analysis
 
 1. Analyze relationship between injury severity and medical records (no need to divide by crash typ);
+- Caution: This feature will be blank for **uninjured occupants**, which means it could only be used for
+   analyzing the effect of Slight and Injury Severity!!!
   
-  - Conclusion:
-    - Injury severity of cases with medical history is **at least slight**;
-    - **No clear trend** was observed between past medical records and  injury severity; 
-    - However, we could see that medical records does **increase the risk of injury**.
+- Conclusion:
+  - **Clear positive correlation** was observed between past medical records and  injury severity;
 
 2. Divide cases by Crash Type, and analyze relationship between injury risk and maneuver;
+- Discussion: No obvious correlation was observed!
     
 3. Check hard cases based on above information (including $\Delta V$).
+- Discussion: In fact, medical records and $\Delta V$ provide nearly no extra info for enhancing recalling severe.
