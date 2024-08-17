@@ -91,7 +91,7 @@ def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha):
     plt.title(f"Set Size Distribution of {cp_type} method")
 
     plt.savefig(
-        os.path.join(save_path, f'Set size distribution of {model_info} under {1 - alpha} confidence level.png'))
+        os.path.join(save_path, f'Set size distribution of {model_info} under {1 - alpha} confidence level_of_{len(conf_set)}.png'))
     plt.clf()
     # plt.show()
 
@@ -131,6 +131,6 @@ def draw_coverage(conf_set, y_true, cp_type: str, save_path, model_info, alpha):
     plt.xlabel('Classes')
     plt.ylabel('Coverage')
 
-    plt.savefig(os.path.join(save_path, f'Class-wise coverage of {model_info} under {1 - alpha} confidence level.png'))
+    plt.savefig(os.path.join(save_path, f'Class-wise coverage of {model_info} under {1 - alpha} confidence level_of_{len(conf_set)}.png'))
     plt.clf()
     # plt.show()

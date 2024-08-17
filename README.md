@@ -2,6 +2,8 @@
 
 Code refactoring of old ConfPre2Post repository.
 
+## Flow
+
 ```
 Flow:
 1. Compare sampling, one-hot and feature selection by different models
@@ -43,4 +45,19 @@ and retrain all data-sets using tha params!
 however, quality of generated data seems to be not that good for non-severe and severe data are like each other. 
 
 
-## pretrain ML -> pretrain TabNet -> retrain them -> Compare performance and choose best 3? -> CP and eval by SSC!
+---
+
+## Analysis 
+
+### Data relationship Analysis
+
+1. Analyze relationship between injury severity and medical records (no need to divide by crash typ);
+  
+  - Conclusion:
+    - Injury severity of cases with medical history is **at least slight**;
+    - **No clear trend** was observed between past medical records and  injury severity; 
+    - However, we could see that medical records does **increase the risk of injury**.
+
+2. Divide cases by Crash Type, and analyze relationship between injury risk and maneuver;
+    
+3. Check hard cases based on above information (including $\Delta V$).

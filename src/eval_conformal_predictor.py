@@ -36,7 +36,7 @@ def eval_with_cp(model_name, model_path, x_train, y_train, x_test, y_test,
     clf = joblib.load(model_path)
 
     if test_in_calib:
-        x_test, x_half_calib, y_test, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
+        x_test_half, x_half_calib, y_test_half, y_half_calib = train_test_split(x_test, y_test, stratify=y_test,
                                                                       shuffle=True, test_size=0.5, random_state=42)
         x_calib = pd.concat([x_train, x_half_calib], axis=0).reset_index(drop=True)
         y_calib = pd.concat([y_train, y_half_calib], axis=0).reset_index(drop=True)
@@ -200,10 +200,10 @@ def tensor_to_float_dict(tensor_dict):
 
 
 if __name__ == '__main__':
-    model_name = 'LGBM'
-    pretrain_info = '2024-07-30_NoOnehot_f1-macro'
-    retrain_info = 'retrain_LGBM_ROS_no_rif_MultiClassification'
-    class_weight_info = '1_1_4'
+    model_name = 'TabNet'
+    pretrain_info = '2024-07-23_ROS_f1_macro'
+    retrain_info = 'Retrain_Tab_no_rif_ROS_MultiClassification'
+    class_weight_info = '1_1_3'
     model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                               'trained_model_info', model_name, pretrain_info, retrain_info,
                               class_weight_info, f'{retrain_info}.pkl')
@@ -230,6 +230,8 @@ if __name__ == '__main__':
                                                                           test_size=0.5, random_state=42)
     x_half_calib = x_half_calib[use_feats]
     x_test = x_test_anl[use_feats]  # Mapping! Concat other results with x_test_anl later.
+    # x_test = x_test_calib_anl[use_feats]  # Use 1761 cases
+    # y_test = y_test_calib_anl
 
     x_test_anl = x_test_anl.reset_index(drop=True)
     x_test = x_test.reset_index(drop=True)
@@ -238,5 +240,13 @@ if __name__ == '__main__':
     x_calib = pd.concat([x_train, x_half_calib], axis=0).reset_index(drop=True)
     y_calib = pd.concat([y_train, y_half_calib], axis=0).reset_index(drop=True)
 
-    eval_with_cp_and_save_conf_set(model_name, model_path, x_calib, y_calib, x_test, y_test, x_test_anl,
+    # For all-data analysis
+    cp_feats = feats[use_feats]
+    feats = feats.reset_index(drop=True)
+    cp_feats = cp_feats.reset_index(drop=True)
+    labels = labels.reset_index(drop=True)
+
+    # eval_with_cp_and_save_conf_set(model_name, model_path, x_calib, y_calib, x_test, y_test, x_test_anl,
+    #                             cp_method='CCCP', alpha=0.10)
+    eval_with_cp_and_save_conf_set(model_name, model_path, x_calib, y_calib, cp_feats, labels, feats,
                                 cp_method='CCCP', alpha=0.10)
