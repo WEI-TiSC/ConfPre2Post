@@ -9,6 +9,7 @@ import pandas as pd
 import shap
 from matplotlib import pyplot as plt
 
+
 if __name__ == "__main__":
     # Get data
     data_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())),
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     # SHAP for interpretation
     background = shap.sample(x_test, 300)
     explainer = shap.KernelExplainer(model.predict_proba, background)  # Choose 400 cases for background
-    shap_values = explainer.shap_values(x_test[:150])
+    shap_values = explainer.shap_values(x_test)
 
     inury_level = ['No Injury', 'Slight Injury', 'Severe Injury']
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
     beeswarm_path = os.path.join(anl_path, 'beeswarm')
     os.makedirs(beeswarm_path, exist_ok=True)
     for i in range(len(shap_values)):
-        shap.summary_plot(shap_values[i], x_test[:150],
+        shap.summary_plot(shap_values[i], x_test,
                           feature_names=x_test.columns, max_display=28, show=False
                           )
         plt.savefig(os.path.join(beeswarm_path, f"SHAP_summary_plot_of_{inury_level[i]}.png"),
@@ -58,7 +59,7 @@ if __name__ == "__main__":
         shap_values_expl = shap.Explanation(
             values=shap_values[draw_injury_level],
             base_values=explainer.expected_value[draw_injury_level],
-            data=x_test[:150],
+            data=x_test,
             feature_names=x_test.columns
         )
         shap.plots.heatmap(shap_values_expl, max_display=28, show=False, plot_width=13.0)
