@@ -43,20 +43,20 @@ FACTOR_DICT = {
     "features": {
         'Driver':
             [
-                'Alcohol Present',  # null: 1031
-                'Distracted in Driving',  # null: 2481
+                'Alcohol Present',  # null: 1031 fin
+                'Distracted in Driving',  # null: 2481 fin
                 'height',
                 'weight',
                 'Age',
-                'Sex',
-                'Race',
+                'Sex',  # fin
+                'Race',  # fin
             ],
 
         'Vehicle':
             [
-                'premovement before collision',
-                'Body Category',  # 与Curb Weight有点重合感
-                'Pre-event Location',
+                'premovement before collision',  # fin
+                'Body Category',  # 与Curb Weight有点重合感 fin
+                'Pre-event Location',  # fin
                 'Curb Weight',  # 与Body Category有点重合感
                 'Model Year',
                 'Clock-form Direction of force'
@@ -66,16 +66,16 @@ FACTOR_DICT = {
             [
                 'Speed Limit',
                 'Number of lanes',
-                'Traffic Condition',
-                'Surface Condition',
-                'Surface Type',
-                'Uphill or Downhill',
-                'Crash Type',
-                'Lighting Condition',
-                'Related to Intersection',
-                'Traffic Conrtol Functioning',
+                'Traffic Condition',  # fin
+                'Surface Condition',  # fin
+                'Surface Type',  # fin
+                'Uphill or Downhill',  # fin
+                'Crash Type',  # fin
+                'Lighting Condition',  # fin
+                'Related to Intersection',  # fin
+                'Traffic Conrtol Functioning',  # fin
                 'Climate',
-                'Alignment of Road'
+                'Alignment of Road'  # fin
             ],
         'rif':
             ['CASEWGT'],

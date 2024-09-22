@@ -38,19 +38,68 @@ however, quality of generated data seems to be not that good for non-severe and 
 
 ---
 
-## Analysis 
+## Re-grouping
 
-### Data relationship Analysis
+### Drver
 
-1. Analyze relationship between injury severity and medical records (no need to divide by crash typ);
-- Caution: This feature will be blank for **uninjured occupants**, which means it could only be used for
-   analyzing the effect of Slight and Injury Severity!!!
-  
-- Conclusion:
-  - **Clear positive correlation** was observed between past medical records and  injury severity;
+#### PREMOVE
 
-2. Divide cases by Crash Type, and analyze relationship between injury risk and maneuver;
-- Discussion: No obvious correlation was observed!
-    
-3. Check hard cases based on above information (including $\Delta V$).
-- Discussion: In fact, medical records and $\Delta V$ provide nearly no extra info for enhancing recalling severe.
+1. Going straight; (1)
+2. Decelerating & stopping; (2, 5, 7, 9, 13)
+3. Accelerating & starting; (3, 4, 8)
+4. Turning; (10, 11, 12)
+5. Changing lanes; (6, 15, 16, 17)
+5. Negotiating a curve; (14)
+
+
+#### PRELOC
+
+1. Stayed in original travel lane; (1)
+2. Stayed on roadway and left original lane; (2, 3)
+3. Departed roadway; (4, 5)
+4. Entered roadway; (6, 7)
+
+---
+
+### Traffic Env
+
+#### Traffic Condition
+0. No traffic control; (0)
+1. Traffic control signal (not RR crossing); (1)
+2. Stop sign; (2)
+3. Yield sign; (3, 4, 5)
+4. Warning sign; (6, 7, 8)
+
+#### Related to Intersection
+0. Non-interchange area and non-junction; (0)
+1. Interchange area related; (1)
+2. Intersection related/non-interchange; (2)
+3. Driveway/alley access related/non-interchange;(3, 4, 5)
+
+#### Uphill or Downhill
+1. Level; (1)
+2. Uphill grade (>2%); (2, 3)
+3. Downhill grade (>2%); (4, 5)
+
+#### Lighting Condition
+1. Daylight; (1)
+2. Dark; (2)
+3. Dark but lighted; (3)
+4. Dawn or Dusk; (4, 5)
+
+#### Surface Type
+1. Concrete;(1)
+2. Bituminous(asphalt); (2)
+3. Other; (3, 4, 5)
+
+#### Surface Condition
+1. Dry; (1)
+2. Wet; (2)
+3. Snow/Slush/Frost; (3, 4, 5, 6)
+
+#### Climate
+1. Clear; (1)
+2. Rain; (2)
+3. Cloudy; (8)
+4. Fog, Soil, Sand; (5, 6, 7)
+5. Extreme weather (Hail, Snow, Drizzle); (3, 4, 9, 10)
