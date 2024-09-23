@@ -164,10 +164,14 @@ def eval_with_cp_and_save_conf_set(model_name, model_path, x_calib, y_calib, x_t
     save_path = os.path.join(os.path.dirname(model_path), f'{model_info}')
     os.makedirs(save_path, exist_ok=True)
 
-    analysis_data.to_csv(os.path.join(os.path.dirname(save_path), 'analysis_data.csv'), index=False)  # TODO: find covered cases in Jupyter!
+    analysis_data.to_csv(os.path.join(os.path.dirname(save_path), 'analysis_data.csv'), index=False)
 
     eval_CP.draw_coverage(conf_sets, y_test, cp_method, save_path, model_info, alpha=alpha)
     eval_CP.draw_set_sizes(conf_sets, cp_method, save_path, model_info, alpha=alpha)
+
+    # draw serious set size
+    serious_cases = [conf_sets[i] for i in range(len(y_test)) if y_test[i] == 2]
+    eval_CP.draw_set_sizes(serious_cases, cp_method, save_path, model_info, alpha=alpha, serious_only=True)
 
     avg_size, avg_size_by_class = eval_CP.calc_avg_set_size_by_class(conf_sets, y_test)
     ssc_metric = eval_CP.calc_ssc_metric(conf_sets, y_test)

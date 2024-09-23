@@ -69,7 +69,7 @@ def calc_ssc_metric(conf_set, y_true):
     return ssc_metric
 
 
-def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha):
+def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha, serious_only=False):
     """
     Draw set size figure.
 
@@ -88,10 +88,14 @@ def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha):
     for idx, set_size in zip(x_tick, set_sizes):
         plt.text(idx, set_size[1], set_size[1], ha='center', va='bottom', fontsize=10)
 
-    plt.title(f"Set Size Distribution of {cp_type} method")
+    serious = ''
+    if serious_only:
+        serious = 'Serious Injury of '
+
+    plt.title(f"Set Size Distribution of {serious} {cp_type} method")
 
     plt.savefig(
-        os.path.join(save_path, f'Set size distribution of {model_info} under {1 - alpha} confidence level.png'), dpi=300)
+        os.path.join(save_path, f'Set size distribution of {serious} {model_info} under {1 - alpha} confidence level.png'), dpi=300)
     plt.clf()
     # plt.show()
 
