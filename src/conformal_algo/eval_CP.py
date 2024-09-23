@@ -92,7 +92,7 @@ def draw_set_sizes(conf_set, cp_type: str, save_path, model_info, alpha, serious
     if serious_only:
         serious = 'Serious Injury of '
 
-    plt.title(f"Set Size Distribution of {serious} {cp_type} method")
+    # plt.title(f"Set Size Distribution of {serious} {cp_type} method")
 
     plt.savefig(
         os.path.join(save_path, f'Set size distribution of {serious} {model_info} under {1 - alpha} confidence level.png'), dpi=300)
@@ -131,7 +131,7 @@ def draw_coverage(conf_set, y_true, cp_type: str, save_path, model_info, alpha):
         plt.text(idx, covered, '%.3f' % covered, ha='center', va='bottom', fontsize=10)
 
     plt.axhline(y=0.9, color='r', linestyle='--')
-    plt.title(f'{cp_type} method coverage')
+    # plt.title(f'{cp_type} method coverage')
     plt.xlabel('Classes')
     plt.ylabel('Coverage')
 
