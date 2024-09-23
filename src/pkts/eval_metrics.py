@@ -78,3 +78,13 @@ class f1_macro_for_eval(Metric):
     def __call__(self, y_true, y_pred):
         y_pred = np.argmax(y_pred, axis=1)
         return metrics.f1_score(y_true=y_true, y_pred=y_pred, average='macro')
+
+
+class f1_weighted_for_eval(Metric):
+    def __init__(self, ):
+        self._name = 'f1_weighted_for eval'
+        self._maximize = True
+
+    def __call__(self, y_true, y_pred):
+        y_pred = np.argmax(y_pred, axis=1)
+        return metrics.f1_score(y_true=y_true, y_pred=y_pred, average='weighted')

@@ -88,7 +88,7 @@ if __name__ == '__main__':
         cur_model_dir = os.path.join(model_list_dir, model_name)
         model_settings = os.listdir(cur_model_dir)
         for model_setting in model_settings:  # Whether onehot here
-            if not model_setting.startswith('2024-07-30'):
+            if not model_setting.startswith('2024-09-22'):
                 continue
             one_hot = False
             if '_Onehot' in model_setting:

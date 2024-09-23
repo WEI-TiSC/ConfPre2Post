@@ -19,7 +19,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.utils import compute_class_weight
 
-from src.pkts.eval_metrics import f1_macro_for_eval
+from src.pkts.eval_metrics import f1_macro_for_eval, f1_weighted_for_eval
 from src.pkts.loss_funcs import FocalLoss
 from src.pkts.my_logger import logger
 from src.pkts import preprocessing_modules as prepro_modules, eval_metrics
@@ -77,7 +77,7 @@ def objective_tab(feats, labels, trial, sampling='ROS', class_weights=None):
         y_train=y_train,
         eval_set=[(x_train.values, y_train), (x_cv.values, y_cv)],
         eval_name=['train', 'validation'],
-        eval_metric=[f1_macro_for_eval],
+        eval_metric=[f1_weighted_for_eval],
         max_epochs=500,
         batch_size=256,
         patience=100,
@@ -85,8 +85,10 @@ def objective_tab(feats, labels, trial, sampling='ROS', class_weights=None):
     )
 
     y_pred = tab_clf.predict(x_cv.values)
-    cv_score = f1_score(y_cv, y_pred, average='macro')
-    logger.info(f'Current CV f1-macro score of is: {cv_score}')
+    # cv_score = f1_score(y_cv, y_pred, average='macro')
+    cv_score = f1_score(y_cv, y_pred, average='weighted')
+    # logger.info(f'Current CV f1-macro score of is: {cv_score}')
+    logger.info(f'Current CV f1-weighted score of is: {cv_score}')
     return cv_score
 
 
@@ -94,15 +96,16 @@ def hyperparam_tuning(feats, labels, sampling='ROS', n_trials=300):
     pruner = optuna.pruners.MedianPruner()
     study_info = 'TabNet_' + sampling
     study_direction = 'maximize'  # based on: metric == 'macro'
-    print(f"Study aims to {study_direction} the metric: f1_macro!")
+    # print(f"Study aims to {study_direction} the metric: f1_macro!")
+    print(f"Study aims to {study_direction} the metric: f1_weighted!")
     study = optuna.create_study(direction=study_direction, study_name=study_info, pruner=pruner)
     study.optimize(lambda trial: objective_tab(feats, labels, trial, sampling=sampling), n_trials=n_trials)
 
-    logger.debug(f'{study_info} get the Best f1_macro: {study.best_value:.3f}')
+    logger.debug(f'{study_info} get the Best f1_weighted: {study.best_value:.3f}')
 
     save_result_pth = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                    f'trained_model_info/TabNet',
-                                   f'{datetime.date.today()}_{sampling}_f1_macro')
+                                   f'{datetime.date.today()}_{sampling}_f1_weighted')
     os.makedirs(save_result_pth, exist_ok=True)
 
     # 下面的添加存模型！
@@ -194,7 +197,8 @@ def retrain_tab_module(x_train,
         y_train=y_train,
         eval_set=[(x_train.values, y_train), (x_test.values, y_test)],
         eval_name=['train', 'test'],
-        eval_metric=[f1_macro_for_eval],
+        # eval_metric=[f1_macro_for_eval],
+        eval_metric=[f1_weighted_for_eval],
         # weights=1,  # 1 for automated balancing dict for custom weights per class
         max_epochs=1000,
         batch_size=512,
@@ -272,11 +276,13 @@ def retrain_tab(data_path, param_path, weights):
 if __name__ == "__main__":
     DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                              'data', 'Combined', 'no_one_hot')  # Deep learning do not need one_hot
-    # N_TRIALS = 100
-    MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                              'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro')
-    CLASS_WEIGHTS = [[1, 1, 2], [1, 1, 3], [1, 1, 4], [1, 1, 5]]
+    N_TRIALS = 100
+    # MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    #                           'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro')
+    # MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    #                           'trained_model_info', 'TabNet', '2024-09-22_ROS_f1_weighted')
+    # CLASS_WEIGHTS = [[1, 1, 2], [1, 1, 3], [1, 1, 4], [1, 1, 5]]
 
-    # save_path = pre_train_tab(DATA_PATH, N_TRIALS, sampling='ROS')
-    for class_wgt in CLASS_WEIGHTS:
-        retrain_tab(DATA_PATH, MODEL_PATH, class_wgt)
+    save_path = pre_train_tab(DATA_PATH, N_TRIALS, sampling='ROS')
+    # for class_wgt in CLASS_WEIGHTS:
+    #     retrain_tab(DATA_PATH, MODEL_PATH, class_wgt)

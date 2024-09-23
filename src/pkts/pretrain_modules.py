@@ -146,7 +146,7 @@ def pre_train_LGBM(x_train, x_cv, y_train, y_cv, param_grids, cv_scores, idx, me
     else:
         if metric == 'f1-macro':
             average = 'macro'
-        else:
+        elif metric == 'f1-weighted':
             average = 'weighted'
 
         cv_scores[idx] = f1_score(y_cv, pred_y, average=average)
@@ -175,7 +175,7 @@ def pre_train_RF(x_train, x_cv, y_train, y_cv, param_grids, cv_scores, idx, metr
     else:
         if metric == 'f1-macro':
             average = 'macro'
-        else:
+        elif metric == 'f1-weighted':
             average = 'weighted'
 
         cv_scores[idx] = f1_score(y_cv, pred_y, average=average)
@@ -206,7 +206,7 @@ def pre_train_CB(x_train, x_cv, y_train, y_cv, param_grids, cv_scores, idx, metr
     else:
         if metric == 'f1-macro':
             average = 'macro'
-        else:
+        elif metric == 'f1-weighted':
             average = 'weighted'
 
         cv_scores[idx] = f1_score(y_cv, pred_y, average=average)

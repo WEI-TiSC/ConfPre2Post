@@ -98,20 +98,21 @@ if __name__ == "__main__":
 
     # ----------------------------------------------------------------------
     # Set up retrain flow
-    class_weights = [{0: 1, 1: 1, 2: 2}, {0: 1, 1: 1, 2: 3}, {0: 1, 1: 1, 2: 4}, {0: 1, 1: 1, 2: 5}]
+    # class_weights = [{0: 1, 1: 1, 2: 2}, {0: 1, 1: 1, 2: 3}, {0: 1, 1: 1, 2: 4}, {0: 1, 1: 1, 2: 5}]
+    class_weights = [{0:1, 1:1, 2:3}]
     models_name = [each for each in os.listdir(models_path)]
     rif_setting = [True, False]
-    sampling_range = ['ROS', 'ADASYN', 'SMOTETomek']
+    sampling_range = ['None', 'ROS', 'ADASYN', 'SMOTETomek']
     # sampling_range = ['None']
     one_hot_setting = [True, False]
     for model in models_name:
-        if model == 'TabNet' or model == 'RF':
+        if model == 'TabNet':
             continue
         model_param_dir_list = [x for x in os.listdir(os.path.join(models_path, model))]
         cur_save_dir = os.path.join(models_path, model)
 
         for ml_setting in model_param_dir_list:
-            if not ml_setting.startswith('2024-07-30_NoOnehot'):
+            if not ml_setting.startswith('2024-09-22_NoOnehot_f1-weighted'):
                 continue
             pre_train_params = os.path.join(models_path, model, ml_setting, 'pre_train_info', 'param_dict.json')
             with open(pre_train_params, 'r', encoding='utf-8') as f:

@@ -12,7 +12,7 @@ from src.pkts.pretrain_modules import param_search_by_optuna
 
 def main_flow_pre_train(data_path, use_feats_list, n_trials, use_metric):
     # for compare
-    using_models = ['CB', 'LGBM']
+    using_models = ['CB', 'LGBM', 'RF']
     # using_onehot = [True, False]
 
     # pre-train models by ROS with/without one-hot setting (6-fold CV used)
@@ -42,6 +42,6 @@ if __name__ == "__main__":
 
     # for pre-train
     trials = 200
-    using_metric = 'f1-macro'
+    using_metric = 'f1-weighted'
 
     main_flow_pre_train(data_path, use_feats_list, trials, using_metric)
