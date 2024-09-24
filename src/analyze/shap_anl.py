@@ -19,6 +19,9 @@ if __name__ == "__main__":
     y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
     y_test = pd.Series(y_test['InjurySeverity'].values)
 
+    # Rename PDOF as relative angle
+    x_test.rename(columns={'Clock-form Direction of force': 'Relative Angle'}, inplace=True)
+
     # Read model
     model_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())),
                               'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro',
@@ -31,40 +34,43 @@ if __name__ == "__main__":
     os.makedirs(anl_path, exist_ok=True)
 
     # SHAP for interpretation
-    background = shap.sample(x_test, 30)
+    background = shap.sample(x_test, 500)
     explainer = shap.KernelExplainer(model.predict_proba, background)  # Choose 400 cases for background
-    shap_values = explainer.shap_values(x_test[:15])
+    shap_values = explainer.shap_values(x_test[:400])
 
     inury_level = ['No Injury', 'Slight Injury', 'Severe Injury']
 
     # Save beeswarm
     beeswarm_path = os.path.join(anl_path, 'beeswarm')
     os.makedirs(beeswarm_path, exist_ok=True)
-    for i in range(len(shap_values)):
-        shap.summary_plot(shap_values[i], x_test[:15],
+    # for i in range(len(shap_values)):
+    for class_indedx in range(shap_values.shape[2]):
+        shape_val_class = shap_values[:, :, class_indedx]
+        shap.summary_plot(shape_val_class, x_test[:400],
                           feature_names=x_test.columns, max_display=28, show=False
                           )
-        plt.savefig(os.path.join(beeswarm_path, f"SHAP_summary_plot_of_{inury_level[i]}.png"),
+        plt.savefig(os.path.join(beeswarm_path, f"SHAP_summary_plot_of_{inury_level[class_indedx]}.png"),
                     dpi=300, bbox_inches='tight')
-        plt.show()
+        # plt.show()
+        plt.clf()
 
     # Save heatmap
     heatmap_path = os.path.join(anl_path, 'heatmap')
     os.makedirs(heatmap_path, exist_ok=True)
 
     # Only draw severe SHAP heatmap?
-    for i in range(len(shap_values)):
-        draw_injury_level = i
+    for class_indedx in range(shap_values.shape[2]):
         shap_values_expl = shap.Explanation(
-            values=shap_values[draw_injury_level],
-            base_values=explainer.expected_value[draw_injury_level],
-            data=x_test[:15],
+            values=shap_values[:, :, class_indedx],
+            base_values=explainer.expected_value[class_indedx],
+            data=x_test[:400],
             feature_names=x_test.columns
         )
         shap.plots.heatmap(shap_values_expl, max_display=28, show=False, plot_width=13.0)
-        plt.savefig(os.path.join(heatmap_path, f"SHAP_heatmap_for_{inury_level[i]}.png"), dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(heatmap_path, f"SHAP_heatmap_for_{inury_level[class_indedx]}.png"), dpi=300, bbox_inches='tight')
         plt.gca().tick_params(axis='y', labelsize=7)
         plt.show()
+        plt.clf()
 
     # TODO: change shap cases!
 

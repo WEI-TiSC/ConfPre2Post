@@ -19,6 +19,9 @@ if __name__ == '__main__':
     y_test = pd.read_csv(os.path.join(data_path, 'y_test.csv'))
     y_test = pd.Series(y_test['InjurySeverity'].values)
 
+    # Rename PDOF as relative angle
+    x_test.rename(columns={'Clock-form Direction of force': 'Relative Angle'}, inplace=True)
+
     # Read model
     model_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())),
                               'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro',

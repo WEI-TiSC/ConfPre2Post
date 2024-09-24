@@ -279,10 +279,10 @@ if __name__ == "__main__":
     N_TRIALS = 100
     # MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     #                           'trained_model_info', 'TabNet', '2024-07-23_ROS_f1_macro')
-    # MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    #                           'trained_model_info', 'TabNet', '2024-09-22_ROS_f1_weighted')
+    MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              'trained_model_info', 'TabNet', '2024-09-23_ROS_f1_weighted', 'pre_train_info')
     # CLASS_WEIGHTS = [[1, 1, 2], [1, 1, 3], [1, 1, 4], [1, 1, 5]]
 
-    save_path = pre_train_tab(DATA_PATH, N_TRIALS, sampling='ROS')
+    # save_path = pre_train_tab(DATA_PATH, N_TRIALS, sampling='ROS')
     # for class_wgt in CLASS_WEIGHTS:
-    #     retrain_tab(DATA_PATH, MODEL_PATH, class_wgt)
+    retrain_tab(DATA_PATH, MODEL_PATH, weights=[1, 1, 1])
