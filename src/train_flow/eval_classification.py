@@ -85,7 +85,7 @@ if __name__ == '__main__':
                              'data', 'Combined')
     model_names = os.listdir(model_list_dir)
     for model_name in model_names:
-        if model_name != 'CB':
+        if model_name != 'LGBM':
             continue
         cur_model_dir = os.path.join(model_list_dir, model_name)
         model_settings = os.listdir(cur_model_dir)
