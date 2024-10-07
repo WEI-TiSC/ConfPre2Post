@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # Rename PDOF as relative angle
     x_test.rename(columns={'Clock-form Direction of force': 'Relative Angle',
                            'height': 'Height',
-                           'Premovement before collision': 'Premovement Before Collision',
+                           'premovement before collision': 'Premovement Before Collision',
                            'month': 'Month',
                            'weight': 'Weight',
                            'year': 'Year'
@@ -41,9 +41,9 @@ if __name__ == "__main__":
     os.makedirs(anl_path, exist_ok=True)
 
     # SHAP for interpretation
-    background = shap.sample(x_test, 500)
+    background = shap.sample(x_test, 600)
     explainer = shap.KernelExplainer(model.predict_proba, background)  # Choose 400 cases for background
-    shap_values = explainer.shap_values(x_test[:400])
+    shap_values = explainer.shap_values(x_test[:500])
 
     inury_level = ['No Injury', 'Slight Injury', 'Severe Injury']
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # for i in range(len(shap_values)):
     for class_indedx in range(shap_values.shape[2]):
         shape_val_class = shap_values[:, :, class_indedx]
-        shap.summary_plot(shape_val_class, x_test[:400],
+        shap.summary_plot(shape_val_class, x_test[:500],
                           feature_names=x_test.columns, max_display=28, show=False
                           )
         plt.savefig(os.path.join(beeswarm_path, f"SHAP_summary_plot_of_{inury_level[class_indedx]}.png"),
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         shap_values_expl = shap.Explanation(
             values=shap_values[:, :, class_indedx],
             base_values=explainer.expected_value[class_indedx],
-            data=x_test[:400],
+            data=x_test[:500],
             feature_names=x_test.columns
         )
         shap.plots.heatmap(shap_values_expl, max_display=28, show=False, plot_width=13.0)

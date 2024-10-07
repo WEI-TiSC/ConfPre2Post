@@ -20,7 +20,14 @@ if __name__ == '__main__':
     y_test = pd.Series(y_test['InjurySeverity'].values)
 
     # Rename PDOF as relative angle
-    x_test.rename(columns={'Clock-form Direction of force': 'Relative Angle'}, inplace=True)
+    x_test.rename(columns={'Clock-form Direction of force': 'Relative Angle',
+                           'height': 'Height',
+                           'premovement before collision': 'Premovement Before Collision',
+                           'month': 'Month',
+                           'weight': 'Weight',
+                           'year': 'Year'
+                           },
+                  inplace=True)
 
     # Read model
     model_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())),

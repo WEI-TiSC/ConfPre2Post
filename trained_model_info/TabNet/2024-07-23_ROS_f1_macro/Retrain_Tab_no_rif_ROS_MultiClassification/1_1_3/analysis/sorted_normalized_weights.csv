@@ -3,12 +3,12 @@ Related to Intersection,1.000
 Speed Limit,0.661
 Age,0.635
 Crash Type,0.591
-Clock-form Direction of force,0.523
+Relative Angle,0.523
 Traffic Conrtol Functioning,0.410
 Sex,0.384
 Surface Type,0.372
-weight,0.356
-height,0.329
+Weight,0.356
+Height,0.329
 Number of lanes,0.244
 Climate,0.243
 Alignment of Road,0.224
@@ -17,13 +17,13 @@ Pre-event Location,0.128
 Body Category,0.127
 Race,0.115
 Distracted in Driving,0.107
-premovement before collision,0.103
+Premovement Before Collision,0.103
 Uphill or Downhill,0.093
-month,0.079
+Month,0.079
 Traffic Condition,0.060
 Surface Condition,0.043
 Model Year,0.042
-year,0.034
+Year,0.034
 Day in Week,0.011
 Alcohol Present,0.009
 Lighting Condition,0.000
